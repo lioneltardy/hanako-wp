@@ -1,15 +1,36 @@
 const path = require('path');
 const fs = require('fs');
+const glob = require('glob');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
 const version = '1';
 const isDevelopment = process.env.NODE_ENV !== 'production';
+
+// Fonction pour générer automatiquement les points d'entrée
+function generateEntries() {
+  const entries = {};
+
+  // Chercher tous les fichiers .ts qui ne commencent pas par _ (niveau racine seulement)
+  const tsFiles = glob.sync('views/ts/!(_)*.ts');
+  tsFiles.forEach(file => {
+    const name = path.basename(file, '.ts');
+    entries[name] = './' + file; // Ajouter le ./ au début
+  });
+
+  // Chercher tous les fichiers .scss qui ne commencent pas par _ (niveau racine seulement)
+  const scssFiles = glob.sync('views/scss/!(_)*.scss');
+  scssFiles.forEach(file => {
+    const name = path.basename(file, '.scss');
+    entries[name] = './' + file; // Ajouter le ./ au début
+  });
+
+  return entries;
+}
 
 // Fonction pour extraire les licences CSS
 function extractLicenceComments(file) {
@@ -47,57 +68,109 @@ class CssLicenseExtractorPlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.afterEmit.tap('CssLicenseExtractorPlugin', (compilation) => {
-      // Skip en développement si pas demandé
-      if (isDevelopment && !this.options.extractInDev) {
-        return;
-      }
-
-      Object.keys(compilation.assets).forEach(assetName => {
-        if (assetName.endsWith('.css')) {
-          const assetPath = path.join(compilation.outputOptions.path, assetName);
-
-          if (fs.existsSync(assetPath)) {
-            this.extractLicences(assetPath, assetName);
+    compiler.hooks.thisCompilation.tap('CssLicenseExtractorPlugin', (compilation) => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'CssLicenseExtractorPlugin',
+          stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
+        },
+        () => {
+          // Skip en développement si pas demandé
+          if (isDevelopment && !this.options.extractInDev) {
+            return;
           }
+
+          Object.keys(compilation.assets).forEach(assetName => {
+            if (assetName.endsWith('.css')) {
+              const assetPath = path.join(compilation.outputOptions.path, assetName);
+              // Note: en mode processAssets, on travaille directement avec les assets
+              // plutôt qu'avec les fichiers sur le disque
+              this.extractLicencesFromAsset(compilation, assetName);
+            }
+          });
         }
-      });
+      );
     });
   }
 
-  extractLicences(filePath, fileName) {
+  extractLicencesFromAsset(compilation, assetName) {
     try {
-      const content = fs.readFileSync(filePath, 'utf8');
+      const asset = compilation.assets[assetName];
+      const content = asset.source();
       const comments = content.match(this.options.licensePattern);
 
       if (comments && comments.length > 0) {
-        const licenseFile = filePath + this.options.licenseExtension;
+        const licenseFileName = assetName + this.options.licenseExtension;
 
-        // Écrire les licences
-        fs.writeFileSync(licenseFile, comments.join('\r\n'));
+        // Créer l'asset de licence
+        const licenseContent = comments.join('\r\n');
+        compilation.emitAsset(licenseFileName, {
+          source: () => licenseContent,
+          size: () => licenseContent.length
+        });
 
         // Nettoyer le CSS
         const cleanedContent = content.replace(this.options.licensePattern, '');
-        fs.writeFileSync(filePath, cleanedContent);
+        compilation.updateAsset(assetName, {
+          source: () => cleanedContent,
+          size: () => cleanedContent.length
+        });
 
         if (this.options.verbose) {
-          console.log(`📄 ${comments.length} licence(s) extraite(s) pour: ${fileName}`);
+          console.log(`📄 ${comments.length} licence(s) extraite(s) pour: ${assetName}`);
         }
       }
     } catch (error) {
-      console.error(`❌ Erreur lors de l'extraction des licences pour ${fileName}:`, error);
+      console.error(`⚠ Erreur lors de l'extraction des licences pour ${assetName}:`, error);
     }
+  }
+}
+
+// Plugin custom pour supprimer les fichiers JS des entrées CSS
+class RemoveStyleJsPlugin {
+  apply(compiler) {
+    compiler.hooks.thisCompilation.tap('RemoveStyleJsPlugin', (compilation) => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'RemoveStyleJsPlugin',
+          stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
+        },
+        () => {
+          // Récupérer tous les noms d'entrées qui sont des fichiers SCSS
+          const scssEntries = Array.from(compilation.entrypoints.keys())
+            .filter(entryName => {
+              const entryPoint = compilation.entrypoints.get(entryName);
+              if (entryPoint && entryPoint.chunks) {
+                const chunks = Array.from(entryPoint.chunks);
+                return chunks.some(chunk => {
+                  if (chunk.files) {
+                    return Array.from(chunk.files).some(file =>
+                      file.endsWith('.css') && file.startsWith(`css/${entryName}`)
+                    );
+                  }
+                  return false;
+                });
+              }
+              return false;
+            });
+
+          // Supprimer les fichiers JS correspondants
+          scssEntries.forEach(entryName => {
+            const jsFileName = `js/${entryName}-v${version}.js`;
+            if (compilation.assets[jsFileName]) {
+              compilation.deleteAsset(jsFileName);
+            }
+          });
+        }
+      );
+    });
   }
 }
 
 module.exports = {
   mode: isDevelopment ? 'development' : 'production',
 
-  entry: {
-    main: './views/ts/site.ts',
-    style: './views/scss/style.scss',
-    'editor-style': './views/scss/editor-style.scss',
-  },
+  entry: generateEntries(),
 
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -147,7 +220,9 @@ module.exports = {
             loader: 'css-loader',
             options: {
               sourceMap: true,
-              importLoaders: 2
+              importLoaders: 2,
+              // Ignorer les URLs pour que les assets ne soient pas traités
+              url: false
             }
           },
           {
@@ -178,7 +253,7 @@ module.exports = {
       // Images optimisées (Asset Modules)
       {
         test: /\.(png|jpe?g|gif|svg|webp)$/i,
-        type: 'asset',
+        type: 'asset/resource',
         generator: {
           filename: 'images/[name].[ext]'
         }
@@ -226,12 +301,8 @@ module.exports = {
       verbose: true
     }),
 
-    // Manifeste des assets
-    new WebpackManifestPlugin({
-      fileName: 'manifest.json',
-      publicPath: '',
-      writeToFileEmit: true
-    }),
+    // Plugin pour supprimer les JS des entrées CSS
+    new RemoveStyleJsPlugin(),
 
     // Nettoyage du dossier dist
     new CleanWebpackPlugin({

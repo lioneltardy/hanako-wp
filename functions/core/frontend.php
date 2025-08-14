@@ -36,8 +36,12 @@ if (get_abb_option('dev_mode')) {
  * Include
  */
 $dev_suffix = (get_abb_option('dev_mode') ? '?time=' . date('U') : '');
-$abb_styles[] = ['hw-styles', get_bloginfo('template_directory') . '/dist/css/style-v' . ASSETS_VERSION . '.css' . $dev_suffix, false];
-//$abb_scripts[] = ['hw-scripts', get_bloginfo('template_directory') . '/dist/js/main-v' . ASSETS_VERSION . '.js' . $dev_suffix];
+$abb_styles[] = ['hw-style', get_bloginfo('template_directory') . '/dist/css/style-v' . ASSETS_VERSION . '.css' . $dev_suffix, false];
+$abb_scripts[] = ['hw-script-runtime', get_bloginfo('template_directory') . '/dist/js/runtime-v' . ASSETS_VERSION . '.js' . $dev_suffix];
+$abb_scripts[] = ['hw-script-vendor', get_bloginfo('template_directory') . '/dist/js/vendors-v' . ASSETS_VERSION . '.js' . $dev_suffix];
+$abb_scripts[] = ['hw-script-bootstrap', get_bloginfo('template_directory') . '/dist/js/bootstrap-v' . ASSETS_VERSION . '.js' . $dev_suffix];
+$abb_scripts[] = ['hw-script-hanako', get_bloginfo('template_directory') . '/dist/js/hanako-v' . ASSETS_VERSION . '.js' . $dev_suffix];
+$abb_scripts[] = ['hw-script', get_bloginfo('template_directory') . '/dist/js/script-v' . ASSETS_VERSION . '.js' . $dev_suffix];
 
 $i = 0;
 $externals_scripts = explode("\n", get_abb_option('externals_scripts'));

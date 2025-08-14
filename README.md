@@ -15,7 +15,11 @@ To add a new page/module/resource, etc. (using hanako-cli)
 
 ## Version
 
-Last release 11.06.2025
+Last release 14.08.2025
+
+### 1.6.8
+- webpack configuration enhancements
+- decline button in cookies consent
 
 ### 1.6.7
 - complete refactoring of webpack configuration

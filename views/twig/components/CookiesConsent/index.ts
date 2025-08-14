@@ -17,7 +17,7 @@ export class CookiesConsent extends Component {
 
     this.mode = $('#hw-cookies-consent').data('mode');
 
-    this.modal = new BS_Modal($('#hw-cookies-consent-modal').get(0), { backdrop: 'static', keyboard: false });
+    this.modal = new BS_Modal($('#hw-cookies-consent-modal').get(0), { backdrop: true, keyboard: false });
 
     const cookiesClosed = localStorage.getItem('hw-cookies-defined');
 
@@ -40,7 +40,8 @@ export class CookiesConsent extends Component {
       event.preventDefault();
 
       $('.hw-cookies-setting-switch').each((setting: Collection) => {
-        if (setting.data('key') === 'technical') return;
+        console.log(setting.data('mandatory'));
+        if (setting.data('mandatory') !== undefined) return;
         this.settings[setting.data('key')] = setting.get(0).checked = true;
       });
 
@@ -48,8 +49,21 @@ export class CookiesConsent extends Component {
       this.restoreSettings();
     });
 
+    // Decline all
+    $('.hw-cookies-btn-decline').on('click', (event: MouseEvent) => {
+      event.preventDefault();
+
+      $('.hw-cookies-setting-switch').each((setting: Collection) => {
+        if (setting.data('mandatory') !== undefined) return;
+        this.settings[setting.data('key')] = setting.get(0).checked = false;
+      });
+
+      this.saveSettings();
+      this.restoreSettings();
+    });
+
     // Close cookies modal
-    $('.hw-cookies-btn-agree, .hw-cookies-btn-close-modal').on('click', (event: MouseEvent) => {
+    $('.hw-cookies-btn-agree, .hw-cookies-btn-decline, .hw-cookies-btn-close-modal').on('click', (event: MouseEvent) => {
       event.preventDefault();
 
       $('#hw-cookies-consent').addClass('d-none');
@@ -73,8 +87,8 @@ export class CookiesConsent extends Component {
 
   private initSettings() {
     $('.hw-cookies-setting-switch').each((setting: Collection) => {
-      let value = setting.get(0).checked = this.mode == 'opt-in' ? false : true;
-      if (setting.data('key') === 'technical') value = true;
+      let value = this.mode == 'opt-in' ? false : true;
+      if (setting.data('mandatory') !== undefined) value = true;
       if (setting.data('key') === 'traffic' && navigator.doNotTrack) value = false;
 
       this.settings[setting.data('key')] = value

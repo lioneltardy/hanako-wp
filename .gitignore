@@ -1,13 +1,9 @@
-# ignore node dependency directories
 vendor
 node_modules
 .DS_Store
-package-lock.json
-
-# ignore log files and databases
 *.log
 *.sql
 *.sqlite
-
 dist
 composer.lock
+package-lock.json

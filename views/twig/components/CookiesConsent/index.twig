@@ -1,10 +1,11 @@
 <div id="hw-cookies-consent" class="fixed-bottom d-none" data-mode="{{ get_field('cookies_mode', 'options') }}">
   <div id="hw-cookies-consent-introduction">
-    <p>
+    <div>
       {{ get_field('cookies_text', 'options') }}
-      <a class="hw-cookies-link hw-cookies-btn-configure" href="#">{{ __('Configure', 'hw-theme') }}</a>
       <a class="hw-cookies-link hw-cookies-btn-agree" href="#">{{ __('Accept all', 'hw-theme') }}</a>
-    </p>
+      <a class="hw-cookies-link hw-cookies-btn-decline" href="#">{{ __('Decline', 'hw-theme') }}</a>
+      <a class="hw-cookies-link hw-cookies-btn-configure" href="#">{{ __('Manage', 'hw-theme') }}</a>
+    </div>
   </div>
 </div>
 
