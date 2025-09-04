@@ -1,0 +1,10 @@
+[data-hw-background-image],
+[data-hw-src] {
+  @include hw_transition(500ms, opacity);
+
+  opacity: 0;
+
+  &[data-background-loaded='true']:not(.active) {
+    opacity: 1;
+  }
+}

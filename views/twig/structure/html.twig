@@ -1,13 +1,10 @@
 <!doctype html>
-<html lang="{{ site.language }}">
+<html lang="{{ site.language|slice(0,2) }}">
 <head>
   <meta charset="{{ site.charset }}"/>
-  <meta name="description" content="{{ site.description }}">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>{{ wp_title ? wp_title ~ ' | ' }}{{ site.title }}</title>
+  <title>{{ wp_title ? wp_title : site.title }}</title>
 
   {{ function('wp_head') }}
 </head>

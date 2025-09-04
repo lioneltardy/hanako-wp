@@ -20,22 +20,28 @@ export class LazyLoader extends Component {
       LazyLoader.checkImageVisibility();
     });
 
-    LazyLoader.checkImageVisibility();
-
     this.success();
   }
 
   public static checkImageVisibility() {
-    LazyLoader.images.each((image: Collection) => {
+    LazyLoader.images.each(async (image: Collection) => {
       if (image.viewportPosition().y < $(window).height() + LazyLoader.tolerence && image.data('backgroundLoaded') != 'true') {
-        image.attr('src', image.data('hwSrc'));
+        const imageURL = this.get_src(image.data('hwSrc'));
+
+        await this.preloadImage(imageURL);
+
+        image.attr('src', imageURL);
         image.data('backgroundLoaded', 'true');
       }
     });
 
-    LazyLoader.backgroundImages.each((image: Collection) => {
+    LazyLoader.backgroundImages.each(async (image: Collection) => {
       if (image.viewportPosition().y < $(window).height() + LazyLoader.tolerence && image.data('backgroundLoaded') != 'true') {
-        image.css('background-image', "url('" + image.data('hwBackgroundImage') + "')");
+        const imageURL = this.get_src(image.data('hwBackgroundImage'));
+
+        await this.preloadImage(imageURL);
+
+        image.css('background-image', `url('${imageURL}')`);
         image.data('backgroundLoaded', 'true');
       }
     });
@@ -44,5 +50,27 @@ export class LazyLoader extends Component {
   public static refreshImageList() {
     LazyLoader.images = $('*[data-hw-src]');
     LazyLoader.backgroundImages = $('*[data-hw-background-image]');
+
+    LazyLoader.checkImageVisibility();
+  }
+
+  private static get_src(image_data: string): string {
+    const srcs = image_data.split(';');
+
+    return devicePixelRatio > 1 && srcs[1] ? srcs[1] : srcs[0];
+  }
+
+  private static async preloadImage(image_data: string) {
+    const img = new Image();
+    img.src = this.get_src(image_data);
+
+    return new Promise<void>((resolve) => {
+      img.onload = () => {
+        resolve();
+      };
+      img.onerror = () => {
+        resolve();
+      };
+    });
   }
 }

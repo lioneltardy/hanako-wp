@@ -6,6 +6,7 @@ use Timber\ImageHelper;
 /*
  * Timber
  */
+
 global $installNotices;
 $installNotices = [];
 if (!class_exists('Timber')) {
@@ -93,10 +94,13 @@ function hw_asset($file) {
 /*
  * Image with lazy loading
  */
+/*
+ * Image with lazy loading
+ */
 function hw_lazy_image($image, $size, $classes = '', $alt = '', $title = '', $data = '') {
   $timber_image = Timber::get_image($image);
 
-  if (empty($image)) return;
+  if (empty($timber_image)) return;
 
   $ratio = $timber_image->aspect() > 0 ? 100 / $timber_image->aspect : 1;
 
@@ -104,11 +108,17 @@ function hw_lazy_image($image, $size, $classes = '', $alt = '', $title = '', $da
 
   $alt = (!empty($alt)) ? $alt : $timber_image->alt;
   $title = (!empty($title)) ? $alt : $timber_image->title;
-  $src = $timber_image->src($size);
-  $src = ENABLE_WEBP ? ImageHelper::img_to_webp($src) : $src;
+
+  $srcs = [];
+  foreach (['', '-2x'] as $suffix) {
+    $src = $timber_image->src($size . $suffix);
+    $src = ENABLE_WEBP ? ImageHelper::img_to_webp($src) : $src;
+
+    $srcs[] = $src;
+  }
 
   $return  = '<div class="ratio ' . $classes . '" style="--bs-aspect-ratio: ' . $ratio . '%;">';
-  $return .= '<img data-hw-src="' . $src . '" class="d-block w-100" title="' . $title . '" alt="' . $alt . '" ' . $data . '>';
+  $return .= '<img data-hw-src="' . implode(';', $srcs) . '" class="d-block w-100" title="' . $title . '" alt="' . $alt . '" ' . $data . '>';
   $return .= '</div>';
 
   return $return;
@@ -120,10 +130,17 @@ function hw_lazy_image($image, $size, $classes = '', $alt = '', $title = '', $da
 function hw_lazy_background_image($image, $size) {
   $timber_image = Timber::get_image($image);
 
-  $src = $timber_image->src($size);
-  $src = ENABLE_WEBP ? ImageHelper::img_to_webp($src) : $src;
+  if (empty($timber_image)) return;
 
-  return 'data-hw-background-image="' . $src . '"';
+  $srcs = [];
+  foreach (['', '-2x'] as $suffix) {
+    $src = $timber_image->src($size . $suffix);
+    $src = ENABLE_WEBP ? ImageHelper::img_to_webp($src) : $src;
+
+    $srcs[] = $src;
+  }
+
+  return 'data-hw-background-image="' . implode(';', $srcs) . '"';
 }
 
 /*
@@ -214,8 +231,12 @@ remove_action('wp_head', 'rest_output_link_wp_head');
 remove_action('wp_head', 'rsd_link');
 
 /*
- * Disable inline styles
+ * Disable inline styles and other WordPress stuff
  */
 add_action('wp_enqueue_scripts', function () {
   wp_dequeue_style('global-styles');
 }, 100);
+
+add_filter('wp_img_tag_add_auto_sizes', '__return_false');
+
+remove_filter('wp_robots', 'wp_robots_max_image_preview_large');

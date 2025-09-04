@@ -22,7 +22,7 @@ if (!defined('WP_AUTO_UPDATE_CORE')) {
 }
 
 /*
- * image modification
+ * Image quality modification
  */
 add_filter('jpeg_quality', function () {
   return 100;
@@ -30,12 +30,44 @@ add_filter('jpeg_quality', function () {
 add_filter('big_image_size_threshold', '__return_false');
 
 /*
+ * Remove 768, 1536 and medium_large image sizes
+ */
+add_filter('intermediate_image_sizes_advanced', function ($sizes) {
+  unset($sizes['1536x1536']);
+  unset($sizes['2048x2048']);
+
+  return $sizes;
+});
+
+add_action('init', function () {
+  remove_image_size('1536x1536');
+  remove_image_size('2048x2048');
+});
+
+add_filter('intermediate_image_sizes', function ($sizes) {
+  return array_filter($sizes, function ($val) {
+    return 'medium_large' !== $val;
+  });
+});
+
+/*
  * Allow svg upload
  */
+define('ALLOW_UNFILTERED_UPLOADS', true);
+
 add_filter('upload_mimes', function ($mimes) {
   $mimes['svg'] = 'image/svg+xml';
 
   return $mimes;
+});
+
+// Add unfiltered_upload capability to editor role
+add_action('admin_init', function () {
+  $role = get_role('editor');
+
+  if ($role) {
+    $role->add_cap('unfiltered_upload');
+  }
 });
 
 /*

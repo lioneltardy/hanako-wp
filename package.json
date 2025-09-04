@@ -1,6 +1,6 @@
 {
   "name": "hanako-wp",
-  "version": "1.6.8",
+  "version": "1.6.9",
   "description": "A basic wordpress template based on Timber/Twig and Hanako ts framework.",
   "homepage": "https://github.com/harkle/hanako-wp",
   "bugs": {

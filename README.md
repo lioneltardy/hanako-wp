@@ -4,10 +4,7 @@ A basic wordpress template based on Timber/Twig and Hanako ts framework.
 ## how to use
 To run webpack compilation:
 
-```npm run webpack```
-
-To add a new page/module/resource, etc. (using hanako-cli)
-```hanako add```
+```npm run build```
 
 ## ideas
 
@@ -15,7 +12,13 @@ To add a new page/module/resource, etc. (using hanako-cli)
 
 ## Version
 
-Last release 14.08.2025
+Last release 04.09.2025
+
+### 1.6.9
+- update composer and npm packages
+- remove Wordpress useless images sizes
+- remove useless Wordpress stuff in head
+- add @2x support for lazyloader
 
 ### 1.6.8
 - webpack configuration enhancements
