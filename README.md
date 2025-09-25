@@ -12,7 +12,10 @@ To run webpack compilation:
 
 ## Version
 
-Last release 04.09.2025
+Last release 25.09.2025
+
+### 1.6.10
+- fix source-map and license extraction in webpack config
 
 ### 1.6.9
 - update composer and npm packages

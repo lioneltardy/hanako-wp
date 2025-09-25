@@ -32,25 +32,6 @@ function generateEntries() {
   return entries;
 }
 
-// Fonction pour extraire les licences CSS
-function extractLicenceComments(file) {
-  const content = fs.readFileSync(file, 'utf8');
-  const comments = content.match(/\/\*![^*]*\*+([^\/*][^*]*\*+)*\//g);
-  const licenseComments = [];
-
-  if (comments) {
-    comments.forEach(comment => {
-      licenseComments.push(comment);
-    });
-
-    // Écrire les commentaires de licence dans un fichier séparé
-    fs.writeFileSync(`${file}.LICENSE.txt`, licenseComments.join('\r\n'));
-
-    // Supprimer les commentaires du fichier CSS
-    fs.writeFileSync(file, content.replace(/\/\*![^*]*\*+([^\/*][^*]*\*+)*\//g, ''));
-  }
-}
-
 // Plugin custom pour traiter les licences CSS
 class CssLicenseExtractorPlugin {
   constructor(options = {}) {
@@ -72,7 +53,8 @@ class CssLicenseExtractorPlugin {
       compilation.hooks.processAssets.tap(
         {
           name: 'CssLicenseExtractorPlugin',
-          stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_INLINE
+          // IMPORTANT: On passe avant CssMinimizerPlugin
+          stage: compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE - 1
         },
         () => {
           // Skip en développement si pas demandé
@@ -82,9 +64,6 @@ class CssLicenseExtractorPlugin {
 
           Object.keys(compilation.assets).forEach(assetName => {
             if (assetName.endsWith('.css')) {
-              const assetPath = path.join(compilation.outputOptions.path, assetName);
-              // Note: en mode processAssets, on travaille directement avec les assets
-              // plutôt qu'avec les fichiers sur le disque
               this.extractLicencesFromAsset(compilation, assetName);
             }
           });
@@ -97,6 +76,7 @@ class CssLicenseExtractorPlugin {
     try {
       const asset = compilation.assets[assetName];
       const content = asset.source();
+      const sourceMap = asset.map && asset.map();
       const comments = content.match(this.options.licensePattern);
 
       if (comments && comments.length > 0) {
@@ -109,19 +89,32 @@ class CssLicenseExtractorPlugin {
           size: () => licenseContent.length
         });
 
-        // Nettoyer le CSS
+        // Nettoyer le CSS en préservant la source map
         const cleanedContent = content.replace(this.options.licensePattern, '');
-        compilation.updateAsset(assetName, {
-          source: () => cleanedContent,
-          size: () => cleanedContent.length
-        });
+
+        // Utiliser le bon type de source selon la présence d'une source map
+        const { RawSource, SourceMapSource } = require('webpack-sources');
+
+        let newAsset;
+        if (sourceMap) {
+          // Préserver la source map existante
+          newAsset = new SourceMapSource(
+            cleanedContent,
+            assetName,
+            sourceMap
+          );
+        } else {
+          newAsset = new RawSource(cleanedContent);
+        }
+
+        compilation.updateAsset(assetName, newAsset);
 
         if (this.options.verbose) {
           console.log(`📄 ${comments.length} licence(s) extraite(s) pour: ${assetName}`);
         }
       }
     } catch (error) {
-      console.error(`⚠ Erreur lors de l'extraction des licences pour ${assetName}:`, error);
+      console.error(`⚠️ Erreur lors de l'extraction des licences pour ${assetName}:`, error);
     }
   }
 }
@@ -298,7 +291,7 @@ module.exports = {
     // Extracteur de licences CSS custom
     new CssLicenseExtractorPlugin({
       extractInDev: true,
-      verbose: true
+      verbose: false
     }),
 
     // Plugin pour supprimer les JS des entrées CSS
