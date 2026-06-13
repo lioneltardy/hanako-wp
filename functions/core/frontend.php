@@ -37,12 +37,74 @@ if (get_abb_option('dev_mode')) {
  * Include
  */
 $dev_suffix = (get_abb_option('dev_mode') ? '?time=' . date('U') : '');
-$abb_styles[] = ['hw-style', get_bloginfo('template_directory') . '/dist/css/style-v' . ASSETS_VERSION . '.css' . $dev_suffix, false];
-$abb_scripts[] = ['hw-script-runtime', get_bloginfo('template_directory') . '/dist/js/runtime-v' . ASSETS_VERSION . '.js' . $dev_suffix];
-$abb_scripts[] = ['hw-script-vendor', get_bloginfo('template_directory') . '/dist/js/vendors-v' . ASSETS_VERSION . '.js' . $dev_suffix];
-$abb_scripts[] = ['hw-script-bootstrap', get_bloginfo('template_directory') . '/dist/js/bootstrap-v' . ASSETS_VERSION . '.js' . $dev_suffix];
-$abb_scripts[] = ['hw-script-hanako', get_bloginfo('template_directory') . '/dist/js/hanako-v' . ASSETS_VERSION . '.js' . $dev_suffix];
-$abb_scripts[] = ['hw-script', get_bloginfo('template_directory') . '/dist/js/script-v' . ASSETS_VERSION . '.js' . $dev_suffix];
+
+function hw_get_vite_manifest() {
+  static $manifest = null;
+
+  if ($manifest !== null) return $manifest;
+
+  $manifest_path = get_template_directory() . '/dist/.vite/manifest.json';
+
+  if (!file_exists($manifest_path)) {
+    $manifest = [];
+    return $manifest;
+  }
+
+  $raw_manifest = file_get_contents($manifest_path);
+  $decoded_manifest = json_decode((string)$raw_manifest, true);
+
+  $manifest = is_array($decoded_manifest) ? $decoded_manifest : [];
+
+  return $manifest;
+}
+
+function hw_get_vite_asset_path($entry_name) {
+  $manifest = hw_get_vite_manifest();
+
+  if (!isset($manifest[$entry_name]['file'])) return '';
+
+  return '/dist/' . ltrim($manifest[$entry_name]['file'], '/');
+}
+
+function hw_get_vite_asset_uri($entry_name) {
+  $asset_path = hw_get_vite_asset_path($entry_name);
+
+  if (empty($asset_path)) return '';
+
+  return get_bloginfo('template_directory') . $asset_path;
+}
+
+function hw_get_vite_css_uris($entry_name) {
+  $manifest = hw_get_vite_manifest();
+
+  if (!isset($manifest[$entry_name])) return [];
+
+  $css_files = [];
+
+  if (!empty($manifest[$entry_name]['file']) && str_ends_with($manifest[$entry_name]['file'], '.css')) {
+    $css_files[] = $manifest[$entry_name]['file'];
+  }
+
+  if (!empty($manifest[$entry_name]['css']) && is_array($manifest[$entry_name]['css'])) {
+    $css_files = array_merge($css_files, $manifest[$entry_name]['css']);
+  }
+
+  $css_files = array_values(array_unique($css_files));
+
+  return array_map(function ($file) {
+    return get_bloginfo('template_directory') . '/dist/' . ltrim($file, '/');
+  }, $css_files);
+}
+
+$vite_styles = hw_get_vite_css_uris('views/css/style.css');
+foreach ($vite_styles as $index => $style_uri) {
+  $abb_styles[] = ['hw-style-' . $index, $style_uri . $dev_suffix, false];
+}
+
+$vite_script = hw_get_vite_asset_uri('views/ts/script.ts');
+if (!empty($vite_script)) {
+  $abb_scripts[] = ['hw-script', $vite_script . $dev_suffix];
+}
 
 $i = 0;
 $externals_scripts = explode("\n", get_abb_option('externals_scripts'));
@@ -92,11 +154,86 @@ function hw_asset($file) {
 }
 
 /*
- * Image with lazy loading
+ * Convert image source to WebP and optionally remove the source JPG/PNG when
+ * it is an intermediate generated size (e.g. image-1200x800.jpg).
  */
+function hw_to_webp($src, $delete_source = true) {
+  global $wpdb;
+
+  if (!defined('ENABLE_WEBP') || !ENABLE_WEBP || empty($src) || !class_exists('Timber\\ImageHelper')) {
+    return $src;
+  }
+
+  $webp_src = ImageHelper::img_to_webp($src);
+  if (empty($webp_src)) return $src;
+
+  if ($delete_source) {
+    $src_without_query  = strtok((string)$src, '?');
+    $webp_without_query = strtok((string)$webp_src, '?');
+
+    $upload = wp_upload_dir();
+    $baseurl = isset($upload['baseurl']) ? $upload['baseurl'] : '';
+    $basedir = isset($upload['basedir']) ? $upload['basedir'] : '';
+
+    if (!empty($baseurl) && !empty($basedir) && strpos($src_without_query, $baseurl) === 0) {
+      $relative_src_path  = ltrim(substr($src_without_query, strlen($baseurl)), '/');
+      $relative_webp_path = ltrim(substr($webp_without_query, strlen($baseurl)), '/');
+
+      $source_path = rtrim($basedir, '/') . '/' . $relative_src_path;
+      $webp_path   = rtrim($basedir, '/') . '/' . $relative_webp_path;
+
+      $is_intermediate_size = (bool)preg_match('/-\\d+x\\d+\.(jpe?g|png)$/i', basename($source_path));
+
+      // Update media size metadata to point to the WebP version
+      if ($is_intermediate_size) {
+        $filename = basename($source_path);
+
+        $attachment_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attachment_metadata' AND meta_value = LIKE %" . $filename . "%"));
+
+        if ($attachment_id) {
+          echo 'Found attachment ID ' . $attachment_id . ' for source image ' . $source_path . "\n";
+          $metadata = wp_get_attachment_metadata($attachment_id);
+          if (isset($metadata['sizes'])) {
+            foreach ($metadata['sizes'] as &$size) {
+              if (isset($size['file']) && $size['file'] === basename($source_path)) {
+                $size['file'] = basename($webp_path);
+                break;
+              }
+            }
+            echo 'Updating attachment metadata for ' . $source_path . ' to point to ' . $webp_path . "\n";
+            wp_update_attachment_metadata($attachment_id, $metadata);
+          }
+        }
+      }
+
+      if ($is_intermediate_size && file_exists($source_path) && file_exists($webp_path)) {
+        @unlink($source_path);
+      }
+    }
+  }
+
+  return $webp_src;
+}
+
 /*
  * Image with lazy loading
  */
+function hw_get_srcs($timber_image, $size) {
+  $srcs = [];
+
+  foreach (['', '-2x'] as $suffix) {
+    $timber_image->sizes;
+    if ($suffix === '-2x' && !isset($timber_image->sizes[$size . $suffix])) continue;
+
+    $src = $timber_image->src($size . $suffix);
+    $src = ENABLE_WEBP ? hw_to_webp($src) : $src;
+
+    $srcs[] = $src;
+  }
+
+  return $srcs;
+}
+
 function hw_lazy_image($image, $size, $classes = '', $alt = '', $title = '', $data = '') {
   $timber_image = Timber::get_image($image);
 
@@ -109,16 +246,10 @@ function hw_lazy_image($image, $size, $classes = '', $alt = '', $title = '', $da
   $alt = (!empty($alt)) ? $alt : $timber_image->alt;
   $title = (!empty($title)) ? $alt : $timber_image->title;
 
-  $srcs = [];
-  foreach (['', '-2x'] as $suffix) {
-    $src = $timber_image->src($size . $suffix);
-    $src = ENABLE_WEBP ? ImageHelper::img_to_webp($src) : $src;
+  $srcs = hw_get_srcs($timber_image, $size);
 
-    $srcs[] = $src;
-  }
-
-  $return  = '<div class="ratio ' . $classes . '" style="--bs-aspect-ratio: ' . $ratio . '%;">';
-  $return .= '<img data-hw-src="' . implode(';', $srcs) . '" class="d-block w-100" title="' . $title . '" alt="' . $alt . '" ' . $data . '>';
+  $return  = '<div class="hw-ratio ' . $classes . '" style="--hw-aspect-ratio: ' . $ratio . '%;">';
+  $return .= '<img data-hw-src="' . implode(';', $srcs) . '" class="hw-img-fluid" title="' . $title . '" alt="' . $alt . '" ' . $data . '>';
   $return .= '</div>';
 
   return $return;
@@ -132,13 +263,7 @@ function hw_lazy_background_image($image, $size) {
 
   if (empty($timber_image)) return;
 
-  $srcs = [];
-  foreach (['', '-2x'] as $suffix) {
-    $src = $timber_image->src($size . $suffix);
-    $src = ENABLE_WEBP ? ImageHelper::img_to_webp($src) : $src;
-
-    $srcs[] = $src;
-  }
+  $srcs = hw_get_srcs($timber_image, $size);
 
   return 'data-hw-background-image="' . implode(';', $srcs) . '"';
 }
@@ -172,6 +297,14 @@ add_filter('timber/twig/functions', function ($functions) {
   ];
 
   return $functions;
+});
+
+add_filter('timber/twig', function ($twig) {
+  $twig->addFilter(new \Twig\TwigFilter('force_webp', function ($src) {
+    return hw_to_webp($src);
+  }));
+
+  return $twig;
 });
 
 /*
@@ -229,6 +362,9 @@ remove_action('wp_head', 'wp_generator');
 remove_action('wp_head', 'wp_oembed_add_discovery_links');
 remove_action('wp_head', 'rest_output_link_wp_head');
 remove_action('wp_head', 'rsd_link');
+remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
+remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
+remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
 
 /*
  * Disable inline styles and other WordPress stuff

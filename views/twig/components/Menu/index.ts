@@ -10,11 +10,12 @@ export class Menu extends Component {
   public async init(): Promise<void> {
     await super.init();
 
-    $('#button-toggle-menu').on('click', (event: MouseEvent, button: Collection) => {
+    $('#btn-toggle-menu').on('click', (event: MouseEvent, button: Collection) => {
       event.preventDefault();
 
       button.toggleClass('is-active');
       $('#main-menu').toggleClass('is-opened');
+      button.attr('aria-expanded', String(button.hasClass('is-active')));
     });
 
     this.success();

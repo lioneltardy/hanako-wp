@@ -1,42 +1,48 @@
-<div id="hw-cookies-consent" class="fixed-bottom d-none" data-mode="{{ get_field('cookies_mode', 'options') }}">
+<div id="hw-cookies-consent" class="hw-cookies-consent fixed bottom-0 start-0 w-full bg-white hidden" data-mode="{{ get_field('cookies_mode', 'options') }}">
   <div id="hw-cookies-consent-introduction">
-    <div>
+    <div class="container mx-auto px-10 py-2">
       {{ get_field('cookies_text', 'options') }}
-      <a class="hw-cookies-link hw-cookies-btn-agree" href="#">{{ __('Accept all', 'hw-theme') }}</a>
-      <a class="hw-cookies-link hw-cookies-btn-decline" href="#">{{ __('Decline', 'hw-theme') }}</a>
-      <a class="hw-cookies-link hw-cookies-btn-configure" href="#">{{ __('Manage', 'hw-theme') }}</a>
+      <div class="flex justify-center gap-2">
+        <button class="hw-cookies-btn-agree">{{ __('Accept all', 'hw') }}</button>
+        <button class="hw-cookies-btn-decline">{{ __('Decline', 'hw') }}</button>
+        <button class="hw-cookies-btn-configure" command="show-modal" commandfor="hw-coolies-consent-dialog">{{ __('Manage', 'hw') }}</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div id="hw-cookies-consent-modal" class="modal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ __('Cookies consent', 'hw-theme') }}</h5>
-      </div>
-      <div class="modal-body">
-        {% for setting in get_field('cookies_settings', 'options') %}
-          <div class="d-flex align-items-center">
-            <div class="hw-cookies-setting-description flex-grow-1">
-              <h6>{{ setting.title }}</h6>
-              {{ setting.text }}
-              {% if setting.key == 'traffic' %}
-                <p class="hw-do-not-track-message d-none text-danger small mb-15">
-                  {{ __('Vous avez activé la fonctionnalité «Ne pas suivre» de votre navigateur. Nous ne pouvons donc pas vous proposer d’activer ce cookie.', 'hw-theme') }}
-                </p>
-              {% endif %}
-            </div>
-            <div>
-              <div class="form-check form-switch">
-                <input class="hw-cookies-setting-switch form-check-input" type="checkbox" role="switch" data-key="{{ setting.key }}" {{ setting.mandatory ? 'checked disabled' : '' }}>
-              </div>
+<el-dialog>
+  <dialog id="hw-coolies-consent-dialog" aria-labelledby="dialog-title" class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+    <el-dialog-backdrop class="fixed inset-0 bg-black/25 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+    <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+      <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-4xl data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 sm:mt-0 sm:ml-4">
+              <h3 id="dialog-title" class="text-base font-semibold">{{ __('Cookies consent', 'hw') }}</h3>
+              {% for setting in get_field('cookies_settings', 'options') %}
+                <div class="hw-cookies-setting-row">
+                  <div class="hw-cookies-setting-description">
+                    <h6>{{ setting.title }}</h6>
+                    {{ setting.text }}
+                    {% if setting.key == 'traffic' %}
+                      <p class="hw-do-not-track-message hidden">
+                        {{ __('Vous avez activé la fonctionnalité «Ne pas suivre» de votre navigateur. Nous ne pouvons donc pas vous proposer d’activer ce cookie.', 'hw') }}
+                      </p>
+                    {% endif %}
+                  </div>
+                  <div>
+                    <input class="hw-cookies-setting-switch" type="checkbox" role="switch" data-key="{{ setting.key }}" data-mandatory="{{ setting.mandatory ? 'true' : 'false' }}" {{ setting.mandatory ? 'checked disabled' : '' }}>
+                  </div>
+                </div>
+              {% endfor %}
             </div>
           </div>
-        {% endfor %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary hw-cookies-btn-close-modal" data-bs-dismiss="modal">{{ __('Close', 'hw-theme') }}</button>
-      </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+          <button type="button" command="close" commandfor="hw-coolies-consent-dialog" class="mt-3 inline-flex w-full justify-center rounded-md bg-white border px-3 py-2 text-sm font-semibold hover:bg-gray-500 sm:mt-0 sm:w-auto">{{ __('Close', 'hw-theme') }}</button>
+        </div>
+      </el-dialog-panel>
     </div>
-  </div>
+  </dialog>
+</el-dialog>

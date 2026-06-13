@@ -11,15 +11,16 @@ export class Demo extends Component {
     await super.init();
 
     $('body').on('hw-cookies-setting-external-changed', (event: any) => {
+
       $('.video').each((video: Collection) => {
         const iframe = video.find('iframe');
-        
+
         if (event.detail.isEnabled) {
           iframe.attr('src', iframe.attr('data-src'));
-          video.find('.video-disabled-mask').addClass('d-none').removeClass('d-flex');
+          video.find('.video-disabled-mask').addClass('hidden');
         } else {
-          iframe.attr('src', '');
-          video.find('.video-disabled-mask').addClass('d-flex').removeClass('d-none');
+          iframe.removeAttr('src');
+          video.find('.video-disabled-mask').removeClass('hidden');
         }
       });
     });

@@ -1,0 +1,9 @@
+@theme {
+  --spacing: 4px;
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 60rem;
+  --breakpoint-xl: 75rem;
+  --breakpoint-2xl: 92rem;
+}

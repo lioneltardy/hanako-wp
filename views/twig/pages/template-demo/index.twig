@@ -1,117 +1,128 @@
 {% extends 'structure/html.twig' %}
 
 {% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
+  <div class="container mx-auto px-10">
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 border">
+        <p>{{ __('This is a demo page to test the UI components and modules.', 'hw') }}</p>
+      </div>
+      <div class="col-span-12 lg:col-span-6 border">6</div>
+      <div class="col-span-12 lg:col-span-6 border">6</div>
+      <div class="col-span-6 lg:col-span-3 border">4</div>
+      <div class="col-span-6 lg:col-span-3 border">4</div>
+      <div class="col-span-6 lg:col-span-3 border">4</div>
+      <div class="col-span-6 lg:col-span-3 border">4</div>
+    </div>
+    <div class="grid grid-cols-12 gap-6">
+      <div class="col-span-12">
         <h1>{{ post.title }}</h1>
         {{ post.content }}
         <h2>LPD consent content</h2>
         {% include 'modules/demo/index.twig' %}
-        <h2 id="bootstrap" class="hw-scrollspy-section mt-5">Bootstrap customization</h2>
-        <h3 id="hovers">Hovers</h2>
-        <a href="#" class="text-success text-danger-hover">Hover test</a>
+        <h2 id="bootstrap" class="hw-scrollspy-section mt-8">UI customization</h2>
+        <h3 id="hovers">Hovers</h3>
+        <a href="#" class="text-green-600 hover:text-red-600">Hover test</a>
 
-        <h3 class="mt-4">Responsive behaviour</h2>
-        <div class="position-fixed position-lg-static border border-2 border-lg-0">Responsive position & borders</div>
+        <h3 class="mt-6">Responsive behaviour</h3>
+        <div class="fixed border-2 border-slate-300 lg:static lg:border-0">Responsive position & borders</div>
 
-        <h2 id="modules" class="hw-scrollspy-section mt-5">Modules & components</h2>
+        <h2 id="modules" class="hw-scrollspy-section mt-8">Modules & components</h2>
 
         <h3>Collapse</h3>
 
-        <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">Toggle</a>          </a>
-        <div class="collapse" id="collapseExample">
-          <div class="card card-body">
+        <button class="inline-block rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700" data-hw-collapse-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" type="button">Toggle</button>
+        <div class="hw-collapse__panel" id="collapseExample" hidden>
+          <div class="rounded-xl border border-slate-200 bg-white p-4">
             Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
           </div>
         </div>
 
-        <h3 class="mt-4">Scrollspy</h3>
+        <h3 class="mt-6">Scrollspy</h3>
         <menu class="hw-scrollspy-menu">
-          <a href="#bootstrap">Bootstrap</a>
+          <a href="#bootstrap">UI</a>
           <a href="#modules">Modules & components</a>
           <a href="#lazy">Lazy images</a>
         </menu>
 
-        <h3 class="mt-4">Carousel</h3>
-        <div id="carouselExampleIndicators" class="carousel slide">
-          <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <h3 class="mt-6">Carousel</h3>
+        <div id="carouselExampleIndicators" class="hw-carousel" data-hw-carousel>
+          <div class="hw-carousel__indicators">
+            <button type="button" data-hw-carousel-to="0" class="is-active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-hw-carousel-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-hw-carousel-to="2" aria-label="Slide 3"></button>
           </div>
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <div class="ratio ratio-16x9" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
+          <div class="hw-carousel__inner">
+            <div class="hw-carousel__item is-active">
+              <div class="hw-ratio" style="--hw-aspect-ratio: 56.25%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
             </div>
-            <div class="carousel-item">
-              <div class="ratio ratio-16x9" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
+            <div class="ui-carousel-item" hidden>
+              <div class="hw-ratio" style="--hw-aspect-ratio: 56.25%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
             </div>
-            <div class="carousel-item">
-              <div class="ratio ratio-16x9" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
+            <div class="ui-carousel-item" hidden>
+              <div class="hw-ratio" style="--hw-aspect-ratio: 56.25%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
+          <button class="hw-carousel__control hw-carousel__control--prev" type="button" data-hw-carousel-prev>
+            <span aria-hidden="true">&#10094;</span>
+            <span class="sr-only">Previous</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
+          <button class="hw-carousel__control hw-carousel__control--next" type="button" data-hw-carousel-next>
+            <span aria-hidden="true">&#10095;</span>
+            <span class="sr-only">Next</span>
           </button>
         </div>
 
-        <h3 class="mt-4">Accordion</h3>
-        <div class="accordion accordion-flush" id="accordionFlushExample">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingOne">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+        <h3 class="mt-6">Accordion</h3>
+        <div class="ui-accordion" id="accordionFlushExample">
+          <div class="ui-accordion__item">
+            <h2 class="ui-accordion__header" id="flush-headingOne">
+              <button class="ui-accordion__button" type="button" data-hw-collapse-target="#flush-collapseOne" data-hw-collapse-group="accordion-demo" aria-expanded="false" aria-controls="flush-collapseOne">
                 Accordion Item #1
               </button>
             </h2>
-            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne">
-              <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the first item's accordion body.</div>
+            <div id="flush-collapseOne" class="ui-accordion__panel" aria-labelledby="flush-headingOne" hidden>
+              <div class="ui-accordion__body">Placeholder content for this accordion. This is the first item's accordion body.</div>
             </div>
           </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingTwo">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+          <div class="ui-accordion__item">
+            <h2 class="ui-accordion__header" id="flush-headingTwo">
+              <button class="ui-accordion__button" type="button" data-hw-collapse-target="#flush-collapseTwo" data-hw-collapse-group="accordion-demo" aria-expanded="false" aria-controls="flush-collapseTwo">
                 Accordion Item #2
               </button>
             </h2>
-            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo">
-              <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the second item's accordion body. Let's imagine this being filled with some actual content.</div>
+            <div id="flush-collapseTwo" class="ui-accordion__panel" aria-labelledby="flush-headingTwo" hidden>
+              <div class="ui-accordion__body">Placeholder content for this accordion. This is the second item's accordion body. Let's imagine this being filled with some actual content.</div>
             </div>
           </div>
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingThree">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+          <div class="ui-accordion__item">
+            <h2 class="ui-accordion__header" id="flush-headingThree">
+              <button class="ui-accordion__button" type="button" data-hw-collapse-target="#flush-collapseThree" data-hw-collapse-group="accordion-demo" aria-expanded="false" aria-controls="flush-collapseThree">
                 Accordion Item #3
               </button>
             </h2>
-            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree">
-              <div class="accordion-body">Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the third item's accordion body. Nothing more exciting happening here in terms of content, but just filling up the space to make it look, at least at first glance, a bit more representative of how this would look in a real-world application.</div>
+            <div id="flush-collapseThree" class="ui-accordion__panel" aria-labelledby="flush-headingThree" hidden>
+              <div class="ui-accordion__body">Placeholder content for this accordion. This is the third item's accordion body. Nothing more exciting happening here in terms of content, but just filling up the space to make it look a bit more representative of a real-world application.</div>
             </div>
           </div>
         </div>
 
-        <h2 id="lazy" class="hw-scrollspy-section mt-5">Lazy images</h2>
+        <h2 id="lazy" class="hw-scrollspy-section mt-8">Lazy images</h2>
       </div>
-      <div class="col-3 mt-3">
-        <div class="card">{{ lazy_image(post.meta('image'), 'medium') }}</div>
+      <div class="col-span-12 lg:col-span-3 mt-4">
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
       </div>
-      <div class="col-3 mt-3">
-        <div class="card">{{ lazy_image(post.meta('image'), 'medium') }}</div>
+      <div class="col-span-12 lg:col-span-3 mt-4">
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
       </div>
-      <div class="col-3 mt-3">
-        <div class="card">{{ lazy_image(post.meta('image'), 'medium') }}</div>
+      <div class="col-span-12 lg:col-span-3 mt-4">
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
       </div>
-      <div class="col-3 mt-3">
-        <div class="card">{{ lazy_image(post.meta('image'), 'medium') }}</div>
+      <div class="col-span-12 lg:col-span-3 mt-4">
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
       </div>
-      <div class="col-12 mt-3">
-        <div class="card">
-          <div class="ratio ratio-4x3" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
+      <div class="col-span-12 mt-4">
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div class="hw-ratio" style="--hw-aspect-ratio: 75%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
         </div>
       </div>
     </div>

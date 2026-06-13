@@ -1,0 +1,14 @@
+[role='menu'][hidden] {
+  display: none !important;
+}
+
+[role='menu'] {
+  transform: translateY(6px);
+  transition: transform 180ms ease, opacity 180ms ease;
+  opacity: 0;
+}
+
+[role='menu'].is-open {
+  transform: translateY(0);
+  opacity: 1;
+}

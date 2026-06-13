@@ -87,7 +87,10 @@ add_action('login_head', function () {
 /*
  * Enable editor style menus
  */
-add_editor_style('dist/css/editor-style-v' . ASSETS_VERSION . '.css');
+$editor_style_path = hw_get_vite_asset_path('views/css/editor-style.css');
+if (!empty($editor_style_path)) {
+  add_editor_style(ltrim($editor_style_path, '/'));
+}
 
 /*
  * Message on the dashboard
@@ -312,3 +315,126 @@ add_action('init', function () {
  * Disable WP-Rocket optimizations
  */
 add_filter('rocket_lrc_optimization', '__return_false', 999);
+
+/*
+ * When WebP is enabled: delete the original JPG/PNG after WebP conversion and update the metadata to manage the WebP file as the main image.
+ */
+if (defined('ENABLE_WEBP') && ENABLE_WEBP) {
+  add_filter('wp_generate_attachment_metadata', function ($metadata, $post_id) {
+    if (!class_exists('Timber\ImageHelper')) return $metadata;
+
+    $mime = get_post_mime_type($post_id);
+    if (!in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true)) return $metadata;
+
+    // Ask WordPress/PHP for a higher memory ceiling for heavy image operations.
+    if (function_exists('wp_raise_memory_limit')) {
+      wp_raise_memory_limit('image');
+    }
+
+    $to_bytes = static function ($value) {
+      if (!is_string($value) || $value === '') return 0;
+      $value = trim($value);
+      if ($value === '-1') return -1;
+
+      $unit = strtolower(substr($value, -1));
+      $num  = (int)$value;
+
+      if ($unit === 'g') return $num * 1024 * 1024 * 1024;
+      if ($unit === 'm') return $num * 1024 * 1024;
+      if ($unit === 'k') return $num * 1024;
+
+      return (int)$value;
+    };
+
+    $has_enough_memory_for_image = static function ($path) use ($to_bytes) {
+      $image_info = @getimagesize($path);
+      if (!$image_info || empty($image_info[0]) || empty($image_info[1])) {
+        // If we cannot inspect dimensions, do not block conversion.
+        return true;
+      }
+
+      $width    = (int)$image_info[0];
+      $height   = (int)$image_info[1];
+      $channels = !empty($image_info['channels']) ? (int)$image_info['channels'] : 4;
+
+      // Conservative estimate for decode + transform + encode buffers.
+      $estimated_bytes = (int)ceil($width * $height * $channels * 2.4);
+      $headroom_bytes  = 64 * 1024 * 1024;
+
+      $memory_limit = $to_bytes(ini_get('memory_limit'));
+      if ($memory_limit === -1) return true;
+      if ($memory_limit <= 0) return true;
+
+      $current_usage = memory_get_usage(true);
+      return ($current_usage + $estimated_bytes + $headroom_bytes) < $memory_limit;
+    };
+
+    $convert_to_webp_safe = static function ($path) use ($has_enough_memory_for_image) {
+      if (!file_exists($path)) return false;
+      if (!$has_enough_memory_for_image($path)) return false;
+
+      try {
+        Timber\ImageHelper::img_to_webp($path);
+      } catch (\Throwable $e) {
+        return false;
+      } finally {
+        if (function_exists('gc_collect_cycles')) gc_collect_cycles();
+        if (function_exists('gc_mem_caches')) gc_mem_caches();
+      }
+
+      $webp_path = dirname($path) . '/' . pathinfo($path, PATHINFO_FILENAME) . '.webp';
+      return file_exists($webp_path);
+    };
+
+    // Reliable absolute path to the original file — works for all size origins.
+    $original_path = get_attached_file($post_id);
+    if (!$original_path || !file_exists($original_path)) return $metadata;
+
+    $size_dir = dirname($original_path);
+
+    // Convert the original to WebP (kept alongside the original JPG/PNG).
+    $convert_to_webp_safe($original_path);
+
+    // Convert each intermediate size (default + custom) to WebP, then remove
+    // the JPG/PNG and update the metadata so WordPress manages the .webp file.
+    $image_to_delete = [];
+
+    if (!empty($metadata['sizes']) && is_array($metadata['sizes'])) {
+      // webp creation
+      foreach ($metadata['sizes'] as $size_name => &$size_data) {
+        $src_path  = $size_dir . '/' . $size_data['file'];
+        $webp_name = pathinfo($size_data['file'], PATHINFO_FILENAME) . '.webp';
+        $webp_path = $size_dir . '/' . $webp_name;
+
+        if (!file_exists($src_path)) continue;
+
+        $converted = $convert_to_webp_safe($src_path);
+
+        if ($converted && file_exists($webp_path)) {
+          $image_to_delete[]      = $src_path;
+          $size_data['file']      = $webp_name;
+          $size_data['mime-type'] = 'image/webp';
+        }
+      }
+
+      // jpg/png deletion (after creation of all webp)
+      foreach ($image_to_delete as $src_path) {
+        @unlink($src_path);
+      }
+
+      unset($size_data);
+    }
+
+    return $metadata;
+  }, 10, 2);
+
+  // Delete the original WebP when the attachment is removed.
+  // Intermediate WebP files are handled automatically via the updated metadata.
+  add_action('delete_attachment', function ($post_id) {
+    $file = get_attached_file($post_id);
+    if (!$file) return;
+
+    $webp = dirname($file) . '/' . pathinfo($file, PATHINFO_FILENAME) . '.webp';
+    if (file_exists($webp)) @unlink($webp);
+  });
+}

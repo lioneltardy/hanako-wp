@@ -1,0 +1,12 @@
+* {
+  font-smoothing: antialiased;
+}
+
+/*
+@font-face {
+  font-family: 'Helvetica Neue Light';
+  font-style: normal;
+  font-weight: normal;
+  src: url('../assets/fonts/helvetica-light.woff2') format('woff2');
+}
+*/

@@ -1,13 +1,16 @@
-<div class="container video">
-  <div class="row">
-    <div class="col-9">
-      <div class="ratio ratio-16x9 video">
-        <iframe width="100%" height="100%" data-src="//www.youtube.com/embed/BjtpHPQP3g8?autoplay=0" frameborder="0" allowfullscreen=""></iframe>
-        <div class="video-disabled-mask d-none justify-content-center align-items-center bg-light">
-          <p class="m-0">
-            Cette vidéo est masquée car vous avez refusé l'accès aux contenus tiers.<br/>
-            <a href="#" class="hw-cookies-btn-configure">Paramètres de confidentialité</a>
-          </p>
+<div class="video">
+  <div class="container">
+    <div class="grid grid-cols-12 gap-6">
+      <div class="col-span-12 lg:col-span-9">
+        <div class="video relative aspect-video">
+          <iframe width="100%" height="100%" data-src="//www.youtube.com/embed/BjtpHPQP3g8?autoplay=0" frameborder="0" allowfullscreen=""></iframe>
+          <div class="video-disabled-mask absolute top-0 start-0 w-full h-full hidden flex items-center justify-center bg-gray-500">
+            <p class="m-0">
+              {{ __('Cette vidéo est masquée car vous avez refusé l’accès aux contenus tiers.', 'hw') }}<br />
+              <button command="show-modal" commandfor="hw-coolies-consent-dialog">{{ __('Paramètres de confidentialité', 'hw') }}</button>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

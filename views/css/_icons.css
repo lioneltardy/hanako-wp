@@ -1,0 +1,12 @@
+.bi {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  background-position: center;
+  background-size: contain;
+}
+
+.bi-sm {
+  width: 0.875rem;
+  height: 0.875rem;
+}

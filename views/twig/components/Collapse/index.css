@@ -1,0 +1,41 @@
+.hw-collapse__panel {
+  margin-top: 0.75rem;
+  overflow: hidden;
+  transition: height 260ms ease;
+}
+
+.hw-collapse__panel.is-open {
+  height: auto;
+}
+
+.hw-accordion {
+  margin-top: 1rem;
+  border-top: 1px solid #e6e6e6;
+}
+
+.hw-accordion__item {
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.hw-accordion__button {
+  width: 100%;
+  padding: 0.9rem 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hw-accordion__button::after {
+  content: '+';
+  float: right;
+}
+
+.hw-accordion__button[aria-expanded='true']::after {
+  content: '-';
+}
+
+.hw-accordion__body {
+  padding: 0 0 0.9rem;
+}

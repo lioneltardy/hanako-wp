@@ -2,9 +2,13 @@
 A basic wordpress template based on Timber/Twig and Hanako ts framework.
 
 ## how to use
-To run webpack compilation:
+To run Vite compilation:
+
+```npm run dev```
 
 ```npm run build```
+
+Styles are now plain CSS files in `views/scss/` (folder name kept for compatibility).
 
 ## ideas
 
@@ -12,7 +16,24 @@ To run webpack compilation:
 
 ## Version
 
-Last release 25.09.2025
+Last release 14.05.2026
+
+### 2.0.0
+
+
+### 1.6.12
+- force jpg/png deletion after WebP conversion
+- lazyloader: don't load 2x image on mobile devices
+- remove other useless wp styles
+- enable WebP by default for lazyloader
+- fix an issue with console.log() in production mode
+- update npm packages
+- update composer packages
+
+### 1.6.11
+- add npm run dev command for development with auto reload
+- update npm packages
+- update composer packages
 
 ### 1.6.10
 - fix source-map and license extraction in webpack config

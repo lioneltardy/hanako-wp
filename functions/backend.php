@@ -23,5 +23,6 @@ add_filter('wp_kses_allowed_html', function ($tags, $context) {
  * Add custom image sizes
  */
 add_action('after_setup_theme', function () {
-  //add_image_size('thumbnail-2x', 640, 640, true);
+  add_image_size('medium-2x', 2000, 0, false);
+  add_image_size('big', 5000, 0, false);
 });

@@ -1,7 +1,7 @@
-<menu id="main-menu" class="border m-0 p-0 bg-white w-100">
-  <div class="p-1 d-flex justify-content-center">
+<menu id="main-menu" class="hw-main-menu">
+  <div class="hw-main-menu__inner">
     {% for item in menus.main.items %}
-      <a href="{{ item.link }}" class="d-block text-black text-primary-hover mx-2 {{ item.classes|join(' ') }}">{{ item.title }}</a>
+      <a href="{{ item.link }}" class="hw-main-menu__link {{ item.classes|join(' ') }}">{{ item.title }}</a>
     {% endfor %}
 
     <!-- {{ function('do_action', 'wpml_add_language_selector') }} -->

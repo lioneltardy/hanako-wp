@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@import "./config/_colors.css";
+@import "./config/_layout.css";
+@import "./config/_typography.css";
+
+@source "../twig/**/*.{twig,html,php}";
+@source "../ts/**/*.{ts,js}";
+
+@import "../twig/pages/template-demo/options.css";
+@import "./_fonts.css";
+@import "./_structure.css";
+@import "./_lazyLoader.css";
+@import "./_icons.css";
+@import "./components/_buttons.css";
+@import "./_modules.css";

@@ -57,7 +57,7 @@ export class LazyLoader extends Component {
   private static get_src(image_data: string): string {
     const srcs = image_data.split(';');
 
-    return devicePixelRatio > 1 && srcs[1] ? srcs[1] : srcs[0];
+    return devicePixelRatio > 1 && $(window).width() >= 768 && srcs[1] ? srcs[1] : srcs[0];
   }
 
   private static async preloadImage(image_data: string) {

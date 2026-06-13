@@ -1,9 +1,0 @@
-$accordion-padding-x:                     0;
-$accordion-button-focus-border-color:     transparent;
-$accordion-button-focus-box-shadow:       none;
-$accordion-button-active-bg:              transparent;
-$accordion-icon-transform:                rotate(0deg);
-
-.accordion-button.collapsed::after {
-  transform: rotate(-90deg) !important;
-}

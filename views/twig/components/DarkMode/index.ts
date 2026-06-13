@@ -18,9 +18,9 @@ export class DarkMode extends Component {
     this.setTheme(theme);
     this.showActiveTheme(theme);
 
-    $('[data-bs-theme-value]').each((toggle: Collection) => {
+    $('[data-theme-value]').each((toggle: Collection) => {
       toggle.on('click', () => {
-        const theme = <Theme>toggle.attr('data-bs-theme-value');
+        const theme = <Theme>toggle.attr('data-theme-value');
         localStorage.setItem('theme', theme)
         this.setTheme(theme);
         this.showActiveTheme(theme);
@@ -38,9 +38,9 @@ export class DarkMode extends Component {
 
   private setTheme(theme: Theme) {
     if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      $('body').attr('data-bs-theme', 'dark');
+      $('body').attr('data-theme', 'dark');
     } else {
-      $('body').attr('data-bs-theme', theme);
+      $('body').attr('data-theme', theme);
     }
   }
 
@@ -48,11 +48,10 @@ export class DarkMode extends Component {
     const themeSwitcher = $('#bd-theme');
     if (!themeSwitcher) return;
 
-    const themeSwitcherText = $('#bd-theme-text');
     const activeThemeIcon = $('.theme-icon-active');
-    const btnToActive = $('[data-bs-theme-value="' + theme + '"]');
+    const btnToActive = $('[data-theme-value="' + theme + '"]');
 
-    $('[data-bs-theme-value]').each((element: Collection) => {
+    $('[data-theme-value]').each((element: Collection) => {
       element.removeClass('active');
       element.attr('aria-pressed', 'false');
     });

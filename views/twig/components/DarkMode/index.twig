@@ -1,22 +1,22 @@
-<div class="position-relative">
-  <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (auto)">
+<div class="hw-theme-switcher">
+  <button class="hw-theme-switcher__button" id="bd-theme" type="button" aria-expanded="false" data-hw-dropdown-toggle data-hw-dropdown-menu="#bd-theme-menu" aria-label="Toggle theme (auto)">
     <div class="bi theme-icon-active bi-color-theme-auto"></div>
   </button>
-  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+  <ul id="bd-theme-menu" class="hw-theme-switcher__menu" aria-label="Theme picker" hidden>
     <li>
-      <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+      <button type="button" class="hw-theme-switcher__item" data-theme-value="light" data-hw-dropdown-close aria-pressed="false">
         <div class="bi bi-sm bi-color-theme-light"></div>
         Light
       </button>
     </li>
     <li>
-      <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+      <button type="button" class="hw-theme-switcher__item" data-theme-value="dark" data-hw-dropdown-close aria-pressed="false">
         <div class="bi bi-sm bi-color-theme-dark"></div>
         Dark
       </button>
     </li>
     <li>
-      <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+      <button type="button" class="hw-theme-switcher__item active" data-theme-value="auto" data-hw-dropdown-close aria-pressed="true">
         <div class="bi bi-sm bi-color-theme-auto"></div>
         Auto
       </button>
