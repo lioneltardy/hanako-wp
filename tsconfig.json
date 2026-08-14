@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+      "strictPropertyInitialization": false,
       "noImplicitAny": true,
-      "target": "es2015",
-      "module": "es2015",
+      "target": "es2020",
+      "module": "es2020",
       "moduleResolution": "bundler"
   },
   "exclude": [

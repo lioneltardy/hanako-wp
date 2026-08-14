@@ -1,6 +1,6 @@
-import { $ } from 'hanako-ts/dist-legacy/Framework';
-import { Component } from 'hanako-ts/dist-legacy/Component';
-import { Collection } from 'hanako-ts/dist-legacy/Collection';
+import { $ } from 'hanako-ts/dist/Framework';
+import { Component } from 'hanako-ts/dist/Component';
+import { Collection } from 'hanako-ts/dist/Collection';
 
 export class ScrollSpy extends Component {
   private links: Collection;
@@ -16,13 +16,18 @@ export class ScrollSpy extends Component {
   public async init() {
     await super.init();
 
-    this.sections = $('.hw-scrollspy-section');
-    this.links = $('.hw-scrollspy-menu a');
+    this.sections = $('[data-scrollspy-section]');
+    this.links = $('[data-scrollspy-menu] a');
 
     this.links.on('click', (event: Event, link: Collection) => {
       event.preventDefault();
 
-      $.scrollTo($(link.attr('href')).position().y + -this.headerHeight, 500);
+      const targetHref = link.attr('href');
+      const targetId = targetHref?.startsWith('#') ? targetHref.slice(1) : null;
+      const target = targetId ? document.getElementById(targetId) : null;
+      const targetPosition = target ? $(target).position() : null;
+
+      if (targetPosition && targetPosition.y !== undefined) $.scrollTo(targetPosition.y - this.headerHeight, 500);
     });
 
     $(window).on('scroll', () => {
@@ -40,21 +45,25 @@ export class ScrollSpy extends Component {
   }
 
   public spy(): void {
-    var currentID = this.sections.eq(0).attr('id');
+    let currentID = this.sections.eq(0).attr('id');
 
     this.sections.each((section: Collection) => {
-      if (Math.floor(section.viewportPosition().y) <= this.headerHeight) currentID = $(section).attr('id');
+      const targetPosition = section.viewportPosition();
+
+      if (targetPosition && targetPosition.y !== undefined && Math.floor(targetPosition.y) <= this.headerHeight) currentID = section.attr('id');
     });
 
-    if (currentID && this.links.search('[href*="#' + currentID + '"]').length > 0) {
-      this.links
-        .removeClass('active')
-        .search('[href*="#' + currentID + '"]')
-        .addClass('active');
+    if (currentID) {
+      const activeLinks = this.links.search('[href="#' + CSS.escape(currentID) + '"]');
+
+      if (activeLinks.length > 0) {
+        this.links.removeAttr('data-is-active');
+        activeLinks.attr('data-is-active', '');
+      }
     }
   }
 
   private updateHeaderHeight() {
-    this.headerHeight = $('.hw-scrollspy-header').height();
+    this.headerHeight = parseFloat($('body').css('padding-top')) || 0;
   }
 }

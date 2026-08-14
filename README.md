@@ -1,5 +1,5 @@
 # hanako-wp
-A basic wordpress template based on Timber/Twig and Hanako ts framework.
+A basic wordpress template based on Timber/Twig, TailwindCSS 4 ant Hanako TS.
 
 ## how to use
 To run Vite compilation:
@@ -8,18 +8,20 @@ To run Vite compilation:
 
 ```npm run build```
 
-Styles are now plain CSS files in `views/scss/` (folder name kept for compatibility).
-
-## ideas
-
-- ...
+## Todo
+- Style Gravity Form Calender (trigger icon + calendar popup)
 
 ## Version
 
-Last release 14.05.2026
+Last release 14.08.2026 (Beta)
 
 ### 2.0.0
-
+Full refactoring of the theme to use TailwindCSS 4 instead of Bootstrap 5.3
+– Replace Webpack with Vite
+– Remove all Bootstrap 5.3 dependencies
+- Refactor of the theme structure to use TailwindCSS 4
+- Refactor PHP code structure
+– Hanako TS updated to 2.0.2
 
 ### 1.6.12
 - force jpg/png deletion after WebP conversion

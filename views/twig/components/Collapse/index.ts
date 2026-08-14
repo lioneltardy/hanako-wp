@@ -1,4 +1,6 @@
-import { Component } from 'hanako-ts/dist-legacy/Component';
+import { Component } from 'hanako-ts/dist/Component';
+import { Collection } from 'hanako-ts/dist/Collection';
+import { $ } from 'hanako-ts/dist/Framework';
 
 export class Collapse extends Component {
   constructor(isDebugEnabled: boolean = false) {
@@ -8,16 +10,16 @@ export class Collapse extends Component {
   public async init(): Promise<void> {
     await super.init();
 
-    const triggers = Array.from(document.querySelectorAll<HTMLElement>('[data-hw-collapse-target]'));
+    const triggers = $('[data-toggle="collapse"]');
 
-    triggers.forEach((trigger) => {
+    triggers.each((trigger: Collection) => {
       this.syncTriggerState(trigger);
 
-      trigger.addEventListener('click', (event) => {
+      trigger.on('click', (event) => {
         event.preventDefault();
 
-        const shouldOpen = trigger.getAttribute('aria-expanded') !== 'true';
-        const groupName = trigger.dataset.hwCollapseGroup;
+        const shouldOpen = trigger.attr('aria-expanded') !== 'true';
+        const groupName = trigger.data('collapseGroup');
 
         if (shouldOpen && groupName) {
           this.closeGroup(groupName, trigger);
@@ -30,31 +32,30 @@ export class Collapse extends Component {
     this.success();
   }
 
-  private closeGroup(groupName: string, exceptTrigger: HTMLElement): void {
-    const groupTriggers = Array.from(document.querySelectorAll<HTMLElement>(`[data-hw-collapse-group="${groupName}"]`));
+  private closeGroup(groupName: string, exceptTrigger: Collection): void {
+    const groupTriggers = $(`[data-collapse-group="${groupName}"]`);
 
-    groupTriggers.forEach((groupTrigger) => {
-      if (groupTrigger === exceptTrigger) return;
+    groupTriggers.each((groupTrigger: Collection) => {
+      if (groupTrigger.get(0) === exceptTrigger.get(0)) return;
       this.toggle(groupTrigger, false);
     });
   }
 
-  private syncTriggerState(trigger: HTMLElement): void {
+  private syncTriggerState(trigger: Collection): void {
     const panel = this.getPanel(trigger);
     if (!panel) return;
 
-    const isOpen = !panel.hasAttribute('hidden');
-    trigger.setAttribute('aria-expanded', String(isOpen));
-    panel.classList.toggle('is-open', isOpen);
+    const isOpen = panel.hasClass('h-auto');
+    trigger.attr('aria-expanded', String(isOpen));
 
     if (isOpen) {
-      panel.style.height = 'auto';
+      panel.css('height', 'auto');
     }
   }
 
-  private toggle(trigger: HTMLElement, shouldOpen: boolean): void {
+  private toggle(trigger: Collection, shouldOpen: boolean): void {
     const panel = this.getPanel(trigger);
-    if (!panel || panel.dataset.collapsing === 'true') return;
+    if (!panel || panel.data('collapsing') == 'true') return;
 
     if (shouldOpen) {
       this.openPanel(trigger, panel);
@@ -63,63 +64,57 @@ export class Collapse extends Component {
     }
   }
 
-  private openPanel(trigger: HTMLElement, panel: HTMLElement): void {
-    trigger.setAttribute('aria-expanded', 'true');
-    panel.dataset.collapsing = 'true';
+  private openPanel(trigger: Collection, panel: Collection): void {
+    trigger.attr('aria-expanded', 'true');
+    panel.data('collapsing', 'true');
 
-    panel.hidden = false;
-    panel.classList.remove('is-open');
-    panel.classList.add('is-collapsing');
-
-    panel.style.height = '0px';
+    panel.removeClass('h-auto');
+    panel.css('height', 0);
 
     requestAnimationFrame(() => {
-      panel.style.height = `${panel.scrollHeight}px`;
+      panel.css('height', `${panel.get(0).scrollHeight}px`);
     });
 
-    panel.addEventListener(
+    panel.get(0).addEventListener(
       'transitionend',
       () => {
-        panel.classList.remove('is-collapsing');
-        panel.classList.add('is-open');
-        panel.style.height = 'auto';
-        delete panel.dataset.collapsing;
+        panel.data('collapsing', 'false');
+        panel.addClass('h-auto');
+        panel.css('height', 'auto');
       },
       { once: true }
     );
   }
 
-  private closePanel(trigger: HTMLElement, panel: HTMLElement): void {
-    trigger.setAttribute('aria-expanded', 'false');
-    panel.dataset.collapsing = 'true';
+  private closePanel(trigger: Collection, panel: Collection): void {
+    trigger.attr('aria-expanded', 'false');
+    panel.data('collapsing', 'true');
 
-    panel.style.height = `${panel.scrollHeight}px`;
-    panel.classList.add('is-collapsing');
-    panel.classList.remove('is-open');
+    panel.css('height', `${panel.get(0).scrollHeight}px`);
+    panel.data('collapsing', 'false');
+    panel.removeClass('h-auto');
 
     // Force reflow so the browser applies the starting height before animating to 0.
-    void panel.offsetHeight;
+    void panel.get(0).offsetHeight;
 
     requestAnimationFrame(() => {
-      panel.style.height = '0px';
+      panel.css('height', 0);
     });
 
-    panel.addEventListener(
+    panel.get(0).addEventListener(
       'transitionend',
       () => {
-        panel.classList.remove('is-collapsing');
-        panel.style.height = '';
-        panel.hidden = true;
-        delete panel.dataset.collapsing;
+        panel.data('collapsing', 'false');
+        panel.css('height', '');
       },
       { once: true }
     );
   }
 
-  private getPanel(trigger: HTMLElement): HTMLElement | null {
-    const selector = trigger.dataset.uiCollapseTarget;
+  private getPanel(trigger: Collection): Collection | null {
+    const selector = trigger.data('target');
     if (!selector) return null;
 
-    return document.querySelector<HTMLElement>(selector);
+    return $(selector);
   }
 }

@@ -1,9 +1,5 @@
-<menu id="main-menu" class="hw-main-menu">
-  <div class="hw-main-menu__inner">
-    {% for item in menus.main.items %}
-      <a href="{{ item.link }}" class="hw-main-menu__link {{ item.classes|join(' ') }}">{{ item.title }}</a>
-    {% endfor %}
-
-    <!-- {{ function('do_action', 'wpml_add_language_selector') }} -->
-  </div>
+<menu id="main-menu" class="fixed top-(--header-height) left-0 z-1000 flex h-(--menu-height) max-h-0 w-full flex-col items-center justify-center gap-16 overflow-hidden bg-gray-200 text-large transition-[max-height] duration-300 data-is-open:max-h-screen">
+  {% for item in menus.main.items %}
+    <a href="{{ item.link }}" class="{{ 'current-menu-item' in item.classes ? 'text-primary' }}">{{ item.title }}</a>
+  {% endfor %}
 </menu>

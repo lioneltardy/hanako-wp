@@ -1,0 +1,7 @@
+body {
+  padding-top: var(--header-height);
+
+  &.page-template-page-template-demo {
+    padding-top: calc(var(--header-height) * 2 - 1px);
+  }
+}

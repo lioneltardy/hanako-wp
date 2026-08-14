@@ -1,0 +1,11 @@
+@utility container {
+  @apply mx-auto px-16;
+
+  @media (width >= theme(--breakpoint-lg)) {
+    @apply px-40;
+  }
+
+  @media (width >= theme(--breakpoint-xl)) {
+    @apply px-64;
+  }
+}

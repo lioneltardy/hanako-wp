@@ -1,0 +1,5 @@
+@utility grid-* {
+  display: grid;
+  grid-template-columns: repeat(--value(integer), 1fr);
+  gap: var(--gutter);
+}

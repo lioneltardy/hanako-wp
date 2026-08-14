@@ -1,0 +1,38 @@
+* {
+  font-smoothing: antialiased;
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: bold;
+  src: url('../../assets/fonts/MozillaHeadline-Bold.woff2') format('woff2');
+  font-family: 'MozillaHeadline';
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: normal;
+  src: url('../../assets/fonts/MozillaText-Regular.woff2') format('woff2');
+  font-family: 'MozillaText';
+}
+
+@font-face {
+  font-style: italic;
+  font-weight: normal;
+  src: url('../../assets/fonts/MozillaText-Italic.woff2') format('woff2');
+  font-family: 'MozillaText';
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: bold;
+  src: url('../../assets/fonts/MozillaText-Bold.woff2') format('woff2');
+  font-family: 'MozillaText';
+}
+
+@font-face {
+  font-style: italic;
+  font-weight: bold;
+  src: url('../../assets/fonts/MozillaText-BoldItalic.woff2') format('woff2');
+  font-family: 'MozillaText';
+}

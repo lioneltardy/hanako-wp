@@ -1,0 +1,14 @@
+diff --git a/node_modules/@zackad/prettier-plugin-twig/src/util/publicFunctions.js b/node_modules/@zackad/prettier-plugin-twig/src/util/publicFunctions.js
+index 15d0540..9524157 100644
+--- a/node_modules/@zackad/prettier-plugin-twig/src/util/publicFunctions.js
++++ b/node_modules/@zackad/prettier-plugin-twig/src/util/publicFunctions.js
+@@ -55,7 +55,8 @@ const OWNLINE_HTML_ELEMENTS = [
+     "h6",
+     "li",
+     "td",
+-    "th"
++    "th",
++    "p"
+ ];
+ 
+ /**

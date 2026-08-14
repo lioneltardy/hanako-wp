@@ -1,24 +1,33 @@
-import '@tailwindplus/elements';
+async function loadTailwindPlusElementsIfNeeded(): Promise<void> {
+  const hasTailwindPlusElements = Array.from(document.getElementsByTagName('*')).some(
+    (element: Element) => element.localName.startsWith('el-'),
+  );
+
+  if (!hasTailwindPlusElements) return;
+
+  await import('@tailwindplus/elements');
+}
+
 import { Analytics } from '../../views/ts/components/Analytics';
-import { CookiesConsent } from '../../views/twig/components/CookiesConsent';
+import { Consent } from '../twig/components/Consent';
 import { Carousel } from '../../views/twig/components/Carousel';
 import { Collapse } from '../../views/twig/components/Collapse';
-import { Dropdown } from '../../views/twig/components/Dropdown';
-import { LazyLoader } from '../../views/ts/components/LazyLoader';
+import { LazyLoader } from '../twig/components/LazyLoader';
 import { ScrollSpy } from '../../views/ts/components/ScrollSpy';
-import { DarkMode } from '../../views/twig/components/DarkMode';
 import { Menu } from '../../views/twig/components/Menu';
-import { Demo } from '../../views/twig/modules/demo';
+import { Embed } from '../../views/twig/components/Embed';
+import { Ui } from '../twig/components/UI';
+
+//void loadTailwindPlusElementsIfNeeded(); // Uncomment this line to load Tailwind Plus Elements
 
 (new Analytics()).init();
 (new Carousel()).init();
 (new Collapse()).init();
-(new Demo()).init();
-(new Dropdown()).init();
+(new Embed()).init();
 (new LazyLoader()).init();
 (new ScrollSpy()).init();
-(new DarkMode()).init();
+(new Ui()).init();
 (new Menu()).init();
 
 // Always at the end
-(new CookiesConsent()).init();
+(new Consent()).init();

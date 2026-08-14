@@ -1,130 +1,375 @@
 {% extends 'structure/html.twig' %}
 
+{% import 'components/Collapse/index.twig' as collapse %}
+{% import 'components/UI/index.twig' as ui %}
+
 {% block content %}
-  <div class="container mx-auto px-10">
-    <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-12 border">
-        <p>{{ __('This is a demo page to test the UI components and modules.', 'hw') }}</p>
+  <nav class="fixed top-(--header-height) left-0 z-950 flex w-full justify-center gap-32 border-b border-gray-200 bg-gray-100 py-16 text-white *:data-is-active:text-primary" data-scrollspy-menu>
+    <a href="#columns">Columns</a>
+    <a href="#embed">Embed</a>
+    <a href="#collapse">Collapse</a>
+    <a href="#carousel">Carousel</a>
+    <a href="#lazyload">Lazyload</a>
+    <a href="#forms">Forms</a>
+  </nav>
+  <main class="py-16 lg:py-32">
+    <div class="container grid gap-64">
+      <div class="grid-12">
+        <div class="col-span-12">
+          <h1 class="font-headline text-large">{{ post.title }}</h1>
+        </div>
       </div>
-      <div class="col-span-12 lg:col-span-6 border">6</div>
-      <div class="col-span-12 lg:col-span-6 border">6</div>
-      <div class="col-span-6 lg:col-span-3 border">4</div>
-      <div class="col-span-6 lg:col-span-3 border">4</div>
-      <div class="col-span-6 lg:col-span-3 border">4</div>
-      <div class="col-span-6 lg:col-span-3 border">4</div>
+
+      <section id="columns" data-scrollspy-section>
+        <h2 class="font-headline text-medium">Columns</h2>
+        <div class="mb-32 border-b border-gray-200"></div>
+
+        <div class="grid-12 gap-y-16">
+          <div class="col-span-12 border border-gray-200 p-4">
+            <p class="text-center">12</p>
+          </div>
+          <div class="col-span-12 border border-gray-200 p-4 lg:col-span-6">
+            <p class="text-center">6</p>
+          </div>
+          <div class="col-span-12 border border-gray-200 p-4 lg:col-span-6">
+            <p class="text-center">6</p>
+          </div>
+          <div class="col-span-6 border border-gray-200 p-4 lg:col-span-3">
+            <p class="text-center">6</p>
+          </div>
+          <div class="col-span-6 border border-gray-200 p-4 lg:col-span-3">
+            <p class="text-center">6</p>
+          </div>
+          <div class="col-span-6 border border-gray-200 p-4 lg:col-span-3">
+            <p class="text-center">6</p>
+          </div>
+          <div class="col-span-6 border border-gray-200 p-4 lg:col-span-3">
+            <p class="text-center">6</p>
+          </div>
+          <div class="col-span-12 border border-gray-200 p-4 lg:col-span-6">
+            <div class="grid-5 gap-4">
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/5</p>
+              </div>
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/5</p>
+              </div>
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/5</p>
+              </div>
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/5</p>
+              </div>
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/5</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-12 border border-gray-200 p-4 lg:col-span-6">
+            <div class="grid-3 gap-4">
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/3</p>
+              </div>
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/3</p>
+              </div>
+              <div class="col-span-5 border border-gray-200 p-4 lg:col-span-1">
+                <p class="text-center">1/3</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="embed" data-scrollspy-section>
+        <h2 class="font-headline text-medium">Embed with LPD consent</h2>
+        <div class="mb-32 border-b border-gray-200"></div>
+
+        <div class="grid-12">
+          <div class="col-span-12 lg:col-span-8 lg:col-start-3">
+            {% include 'components/Embed/index.twig' %}
+          </div>
+        </div>
+      </section>
+
+      <section id="collapse" data-scrollspy-section>
+        <h2 class="font-headline text-medium">Collapse</h2>
+        <div class="mb-32 border-b border-gray-200"></div>
+
+        <div class="grid-12">
+          <div class="col-span-12 mb-32">
+            {{ collapse.trigger('collapse-1', 'Toggle panel', options: { classes: 'mb-16 underline' }) }}
+            {% set content %}
+              <div class="rounded border border-gray-200 p-16">
+                <p>This is the content of the collapse panel. It can contain any HTML elements, including text, images, and other components.</p>
+              </div>
+            {% endset %}
+            {{ collapse.panel('collapse-1', content) }}
+          </div>
+        </div>
+        <div class="col-span-12 mb-32">
+          <div class="flex items-center border-t border-b border-gray-200 py-16">
+            {{ collapse.trigger('accordion-1', 'Accordion item 1', options: { classes: 'peer flex-grow text-left' }) }}
+            <svg class="ml-8 h-16 w-16 rotate-0 transition-transform duration-300 peer-aria-expanded:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          {% set content %}
+            <div class="border-b border-gray-200 py-16">
+              <p>This is the content of the collapse panel. It can contain any HTML elements, including text, images, and other components.</p>
+            </div>
+          {% endset %}
+          {{ collapse.panel('accordion-1', content) }}
+          <div class="flex items-center border-t border-b border-gray-200 py-16">
+            {{ collapse.trigger('accordion-2', 'Accordion item 2', options: { classes: 'peer flex-grow text-left' }) }}
+            <svg class="ml-8 h-16 w-16 rotate-0 transition-transform duration-300 peer-aria-expanded:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          {% set content %}
+            <div class="border-b border-gray-200 py-16">
+              <p>This is the content of the collapse panel. It can contain any HTML elements, including text, images, and other components.</p>
+            </div>
+          {% endset %}
+          {{ collapse.panel('accordion-2', content) }}
+          <div class="flex items-center border-t border-b border-gray-200 py-16">
+            {{ collapse.trigger('accordion-3', 'Accordion item 3', options: { classes: 'peer flex-grow text-left' }) }}
+            <svg class="ml-8 h-16 w-16 rotate-0 transition-transform duration-300 peer-aria-expanded:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          {% set content %}
+            <div class="border-b border-gray-200 py-16">
+              <p>This is the content of the collapse panel. It can contain any HTML elements, including text, images, and other components.</p>
+            </div>
+          {% endset %}
+          {{ collapse.panel('accordion-3', content) }}
+        </div>
+        <div class="col-span-12">
+          <div class="flex items-center border-t border-b border-gray-200 py-16">
+            {{ collapse.trigger('accordion-4', 'Accordion group item 1', options: { group: 'accordion-group', classes: 'peer flex-grow text-left' }) }}
+            <svg class="ml-8 h-16 w-16 rotate-0 transition-transform duration-300 peer-aria-expanded:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          {% set content %}
+            <div class="border-b border-gray-200 py-16">
+              <p>This is the content of the collapse panel. It can contain any HTML elements, including text, images, and other components.</p>
+            </div>
+          {% endset %}
+          {{ collapse.panel('accordion-4', content) }}
+          <div class="flex items-center border-t border-b border-gray-200 py-16">
+            {{ collapse.trigger('accordion-5', 'Accordion group item 2', options: { group: 'accordion-group', classes: 'peer flex-grow text-left' }) }}
+            <svg class="ml-8 h-16 w-16 rotate-0 transition-transform duration-300 peer-aria-expanded:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          {% set content %}
+            <div class="border-b border-gray-200 py-16">
+              <p>This is the content of the collapse panel. It can contain any HTML elements, including text, images, and other components.</p>
+            </div>
+          {% endset %}
+          {{ collapse.panel('accordion-5', content) }}
+          <div class="flex items-center border-t border-b border-gray-200 py-16">
+            {{ collapse.trigger('accordion-6', 'Accordion group item 3', options: { group: 'accordion-group', classes: 'peer flex-grow text-left' }) }}
+            <svg class="ml-8 h-16 w-16 rotate-0 transition-transform duration-300 peer-aria-expanded:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </div>
+          {% set content %}
+            <div class="border-b border-gray-200 py-16">
+              <p>This is the content of the collapse panel. It can contain any HTML elements, including text, images, and other components.</p>
+            </div>
+          {% endset %}
+          {{ collapse.panel('accordion-6', content) }}
+        </div>
+      </section>
+
+      <section id="carousel" data-scrollspy-section>
+        <h2 class="font-headline text-medium">Carousel</h2>
+        <div class="mb-32 border-b border-gray-200"></div>
+
+        <div class="grid-12">
+          <div class="col-span-12">
+            <div data-carousel>
+              <div class="relative overflow-hidden" data-carousel-inner>
+                <div class="w-full" data-carousel-item>
+                  <div class="aspect-video bg-cover bg-center" style="background-image:url('{{ asset('images/test.jpg') }}');"></div>
+                </div>
+                <div class="w-full" data-carousel-item>
+                  <div class="aspect-video bg-cover bg-center" style="background-image:url('{{ asset('images/test.jpg') }}');"></div>
+                </div>
+                <div class="w-full" data-carousel-item>
+                  <div class="aspect-video bg-cover bg-center" style="background-image:url('{{ asset('images/test.jpg') }}');"></div>
+                </div>
+              </div>
+              <button class="absolute top-1/2 left-12 z-10 inline-flex size-40 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/45 text-white transition-colors duration-200 hover:bg-black/60" type="button" aria-label="Previous slide" data-carousel-control-prev>&#10094;</button>
+              <button class="absolute top-1/2 right-12 z-10 inline-flex size-40 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/45 text-white transition-colors duration-200 hover:bg-black/60" type="button" aria-label="Previous slide" data-carousel-control-next>&#10095;</button>
+            </div>
+            <div class="mt-8 flex justify-center gap-8" data-carousel-indicators>
+              <button class="aspect-square w-12 rounded-full bg-gray-600 aria-current:bg-white" type="button" data-target="0" aria-current="true" aria-label="Slide 1"></button>
+              <button class="aspect-square w-12 rounded-full bg-gray-600 aria-current:bg-white" type="button" data-target="1" aria-label="Slide 2"></button>
+              <button class="aspect-square w-12 rounded-full bg-gray-600 aria-current:bg-white" type="button" data-target="2" aria-label="Slide 3"></button>
+            </div>
+            <div data-carousel-captions>
+              <p>Caption for slide 1</p>
+              <p>Caption for slide 2</p>
+              <p>Caption for slide 3</p>
+            </div>
+          </div>
+        </div>
+        <dl class="mt-32 flex">
+          <dt class="w-150 text-gray-400">
+            data-ride
+          </dt>
+          <dd class="w-75">false</dd>
+          <dd>Set to "true" to start animating the carousel immediately when the page loads.</dd>
+        </dl>
+        <dl class="flex">
+          <dt class="w-150 text-gray-400">
+            data-interval
+          </dt>
+          <dd class="w-75">5000</dd>
+          <dd>The amount of time to delay between automatically cycling an item.</dd>
+        </dl>
+        <dl class="flex">
+          <dt class="w-150 text-gray-400">
+            data-hover-pause
+          </dt>
+          <dd class="w-75">false</dd>
+          <dd>Set to "true" to pause the cycling of the carousel on mouseenter and resume the cycling of the carousel on mouseleave.</dd>
+        </dl>
+        <dl class="flex">
+          <dt class="w-150 text-gray-400">
+            data-effect
+          </dt>
+          <dd class="w-75">slide</dd>
+          <dd>Set to "fade" to fade the carousel items instead of sliding them.</dd>
+        </dl>
+        <dl class="flex">
+          <dt class="w-150 text-gray-400">
+            data-wrap
+          </dt>
+          <dd class="w-75">true</dd>
+          <dd>Set to "false" to stop the carousel from cycling at the end of the items.</dd>
+        </dl>
+        <dl class="flex">
+          <dt class="w-150 text-gray-400">
+            data-keyboard
+          </dt>
+          <dd class="w-75">true</dd>
+          <dd>Set to "false" to disable keyboard navigation.</dd>
+        </dl>
+        <dl class="flex">
+          <dt class="w-150 text-gray-400">
+            data-touch
+          </dt>
+          <dd class="w-75">true</dd>
+          <dd>Set to "false" to disable touch navigation.</dd>
+        </dl>
+
+        <dl class="mt-32 flex">
+          <dt class="w-225 text-gray-400">
+            carousel:slide
+          </dt>
+          <dd>Event fired when the carousel starts its slide transition.</dd>
+        </dl>
+        <dl class="flex">
+          <dt class="w-225 text-gray-400">
+            carousel:slide-complete
+          </dt>
+          <dd>Event fired when the carousel has completed its slide transition.</dd>
+        </dl>
+      </section>
+
+      <section id="lazyload" data-scrollspy-section>
+        <h2 class="font-headline text-medium">Lazyloading</h2>
+        <div class="mb-32 border-b border-gray-200"></div>
+
+        <div class="grid-12">
+          <div class="col-span-4">
+            <div class="overflow-hidden rounded-xl border border-gray-600">
+              {{ lazy_image(post.meta('image'), 'medium') }}
+            </div>
+          </div>
+          <div class="col-span-4">
+            <div class="overflow-hidden rounded-xl border border-gray-600">
+              {{ lazy_image(post.meta('image'), 'medium') }}
+            </div>
+          </div>
+          <div class="col-span-4">
+            <div class="overflow-hidden rounded-xl border border-gray-600">
+              {{ lazy_image(post.meta('image'), 'medium') }}
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="forms" data-scrollspy-section>
+        <h2 class="font-headline text-medium">Forms</h2>
+        <div class="mb-32 border-b border-gray-200"></div>
+
+        <form class="grid-12 gap-y-16" method="post" action="{{ post.link }}">
+          <div class="col-span-12 lg:col-span-8 lg:col-start-3">
+            {{ ui.label('email', 'Email Address') }}
+            {{ ui.input('email', options: { type: 'email', placeholder: 'Enter your email', required: true, autocomplete: 'email' }) }}
+            {{ ui.validation_message('Please enter a valid email address.', options: { classes: 'mt-4' }) }}
+          </div>
+          <div class="col-span-12 lg:col-span-4 lg:col-start-3">
+            {{ ui.label('firstname', 'Firstname') }}
+            {{ ui.input('firstname', options: { type: 'text', placeholder: 'Firstname', required: true, autocomplete: 'given-name' }) }}
+            {{ ui.validation_message('Please enter your firstname.', options: { classes: 'mt-4' }) }}
+          </div>
+          <div class="col-span-12 lg:col-span-4">
+            {{ ui.label('lastname', 'Lastname') }}
+            {{ ui.input('lastname', options: { type: 'text', placeholder: 'Lastname', required: true, autocomplete: 'family-name' }) }}
+            {{ ui.validation_message('Please enter your lastname.', options: { classes: 'mt-4' }) }}
+          </div>
+          <div class="col-span-12 lg:col-span-8 lg:col-start-3">
+            {{ ui.label('request_type', 'Request type') }}
+            {{ ui.select('request_type', [{ value: 1, label: 'Option 1' }, { value: 2, label: 'Option 2', selected: true }, { value: 2, label: 'Option 2' }], options: { required: true }) }}
+            {{ ui.validation_message('Please choose an option.', options: { classes: 'mt-4' }) }}
+          </div>
+          <div class="col-span-12 lg:col-span-8 lg:col-start-3">
+            {{ ui.label('message', 'Message') }}
+            {{ ui.textarea('message', options: { rows: 8, placeholder: 'Explain your issue', required: true }) }}
+            {{ ui.validation_message('Please enter a message', options: { classes: 'mt-4' }) }}
+          </div>
+
+          <div class="col-span-12 lg:col-span-8 lg:col-start-3">
+            {{ ui.label('thumbnail', 'Your CV') }}
+            {{ ui.upload('thumbnail', 'Upload a thumbnail', { size: 1024, accept: '.jpg,.png,.zip,.pdf', accept_text: 'jpg, png, pdf', size_text: '1 Mo', required: true }) }}
+          </div>
+
+          <div class="col-span-12 lg:col-span-8 lg:col-start-3">
+            <fieldset>
+              {{ ui.legend('Choose an option') }}
+              {{ ui.radio('option', 'Option 1', { id: 'option-1', value: 'option-1', classes: 'mb-8' }) }}
+              {{ ui.radio('option', 'Option 2', { id: 'option-2', value: 'option-2', classes: 'mb-8' }) }}
+              {{ ui.radio('option', 'Option 3', { id: 'option-3', value: 'option-3', classes: 'mb-8' }) }}
+            </fieldset>
+          </div>
+
+          <div class="col-span-12 lg:col-span-8 lg:col-start-3">
+            {{ ui.checkbox('accept-eula', 'I accept the conditions', { required: true, classes: 'mb-8' }) }}
+            {{ ui.checkbox('newsletter-subscribe', 'I want to subscribe to the newsletter', { checked: true, disabled: true }) }}
+          </div>
+
+          <div class="mt-16 border-b border-gray-200 col-span-12 lg:col-span-8 lg:col-start-3"></div>
+          <div class="flex justify-end gap-16 col-span-12 lg:col-span-8 lg:col-start-3">
+            {{ ui.button('Reset', options: { type: 'reset', variant: 'discrete' }) }}
+            {{ ui.button('Submit', options: { type: 'submit' }) }}
+          </div>
+        </form>
+
+        <h2 class="mt-64 font-headline text-medium">Gravity form</h2>
+        <div class="mb-32 border-b border-gray-200"></div>
+
+        <div class="grid-12 gap-y-16">
+          <div class="col-span-12 lg_col-span-8 lg:col-start-3">
+            {{ fn('gravity_form', 2, false, false, '', true) }}
+          </div>
+        </div>
+      </section>
     </div>
-    <div class="grid grid-cols-12 gap-6">
-      <div class="col-span-12">
-        <h1>{{ post.title }}</h1>
-        {{ post.content }}
-        <h2>LPD consent content</h2>
-        {% include 'modules/demo/index.twig' %}
-        <h2 id="bootstrap" class="hw-scrollspy-section mt-8">UI customization</h2>
-        <h3 id="hovers">Hovers</h3>
-        <a href="#" class="text-green-600 hover:text-red-600">Hover test</a>
-
-        <h3 class="mt-6">Responsive behaviour</h3>
-        <div class="fixed border-2 border-slate-300 lg:static lg:border-0">Responsive position & borders</div>
-
-        <h2 id="modules" class="hw-scrollspy-section mt-8">Modules & components</h2>
-
-        <h3>Collapse</h3>
-
-        <button class="inline-block rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700" data-hw-collapse-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" type="button">Toggle</button>
-        <div class="hw-collapse__panel" id="collapseExample" hidden>
-          <div class="rounded-xl border border-slate-200 bg-white p-4">
-            Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
-          </div>
-        </div>
-
-        <h3 class="mt-6">Scrollspy</h3>
-        <menu class="hw-scrollspy-menu">
-          <a href="#bootstrap">UI</a>
-          <a href="#modules">Modules & components</a>
-          <a href="#lazy">Lazy images</a>
-        </menu>
-
-        <h3 class="mt-6">Carousel</h3>
-        <div id="carouselExampleIndicators" class="hw-carousel" data-hw-carousel>
-          <div class="hw-carousel__indicators">
-            <button type="button" data-hw-carousel-to="0" class="is-active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-hw-carousel-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-hw-carousel-to="2" aria-label="Slide 3"></button>
-          </div>
-          <div class="hw-carousel__inner">
-            <div class="hw-carousel__item is-active">
-              <div class="hw-ratio" style="--hw-aspect-ratio: 56.25%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
-            </div>
-            <div class="ui-carousel-item" hidden>
-              <div class="hw-ratio" style="--hw-aspect-ratio: 56.25%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
-            </div>
-            <div class="ui-carousel-item" hidden>
-              <div class="hw-ratio" style="--hw-aspect-ratio: 56.25%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
-            </div>
-          </div>
-          <button class="hw-carousel__control hw-carousel__control--prev" type="button" data-hw-carousel-prev>
-            <span aria-hidden="true">&#10094;</span>
-            <span class="sr-only">Previous</span>
-          </button>
-          <button class="hw-carousel__control hw-carousel__control--next" type="button" data-hw-carousel-next>
-            <span aria-hidden="true">&#10095;</span>
-            <span class="sr-only">Next</span>
-          </button>
-        </div>
-
-        <h3 class="mt-6">Accordion</h3>
-        <div class="ui-accordion" id="accordionFlushExample">
-          <div class="ui-accordion__item">
-            <h2 class="ui-accordion__header" id="flush-headingOne">
-              <button class="ui-accordion__button" type="button" data-hw-collapse-target="#flush-collapseOne" data-hw-collapse-group="accordion-demo" aria-expanded="false" aria-controls="flush-collapseOne">
-                Accordion Item #1
-              </button>
-            </h2>
-            <div id="flush-collapseOne" class="ui-accordion__panel" aria-labelledby="flush-headingOne" hidden>
-              <div class="ui-accordion__body">Placeholder content for this accordion. This is the first item's accordion body.</div>
-            </div>
-          </div>
-          <div class="ui-accordion__item">
-            <h2 class="ui-accordion__header" id="flush-headingTwo">
-              <button class="ui-accordion__button" type="button" data-hw-collapse-target="#flush-collapseTwo" data-hw-collapse-group="accordion-demo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                Accordion Item #2
-              </button>
-            </h2>
-            <div id="flush-collapseTwo" class="ui-accordion__panel" aria-labelledby="flush-headingTwo" hidden>
-              <div class="ui-accordion__body">Placeholder content for this accordion. This is the second item's accordion body. Let's imagine this being filled with some actual content.</div>
-            </div>
-          </div>
-          <div class="ui-accordion__item">
-            <h2 class="ui-accordion__header" id="flush-headingThree">
-              <button class="ui-accordion__button" type="button" data-hw-collapse-target="#flush-collapseThree" data-hw-collapse-group="accordion-demo" aria-expanded="false" aria-controls="flush-collapseThree">
-                Accordion Item #3
-              </button>
-            </h2>
-            <div id="flush-collapseThree" class="ui-accordion__panel" aria-labelledby="flush-headingThree" hidden>
-              <div class="ui-accordion__body">Placeholder content for this accordion. This is the third item's accordion body. Nothing more exciting happening here in terms of content, but just filling up the space to make it look a bit more representative of a real-world application.</div>
-            </div>
-          </div>
-        </div>
-
-        <h2 id="lazy" class="hw-scrollspy-section mt-8">Lazy images</h2>
-      </div>
-      <div class="col-span-12 lg:col-span-3 mt-4">
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
-      </div>
-      <div class="col-span-12 lg:col-span-3 mt-4">
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
-      </div>
-      <div class="col-span-12 lg:col-span-3 mt-4">
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
-      </div>
-      <div class="col-span-12 lg:col-span-3 mt-4">
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">{{ lazy_image(post.meta('image'), 'medium') }}</div>
-      </div>
-      <div class="col-span-12 mt-4">
-        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
-          <div class="hw-ratio" style="--hw-aspect-ratio: 75%;" {{ lazy_background_image(post.meta('image'), 'medium') }}></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </main>
 {% endblock %}

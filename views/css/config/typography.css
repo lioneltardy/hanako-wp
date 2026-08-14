@@ -1,0 +1,11 @@
+@theme {
+  --font-sans: 'MozillaText', sans-serif;
+  --font-headline: 'MozillaHeadline', sans-serif;
+
+  --text-small: 12px;
+  --text-base: 16px;
+  --text-base--line-height: 1.25em;
+  --text-medium: 24px;
+  --text-large: 32px;
+  --text-large--line-height: 1em;
+}

@@ -1,0 +1,32 @@
+dialog:not([open]) {
+  display: none;
+}
+
+.aspect-video,
+.aspect-\(--aspect-ratio\) {
+  position: relative;
+}
+
+.aspect-video::before,
+.aspect-\(--aspect-ratio\)::before {
+  content: '';
+  display: block;
+}
+
+.aspect-video > *,
+.aspect-\(--aspect-ratio\) > * {
+  position: absolute;
+  inset: 0;
+}
+
+.aspect-video::before {
+  padding-top: 56.25%;
+}
+
+.aspect-square::before {
+  padding-top: 100%;
+}
+
+.aspect-\(--aspect-ratio\)::before {
+  padding-top: calc(100% / var(--aspect-ratio));
+}

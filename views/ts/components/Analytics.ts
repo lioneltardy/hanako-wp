@@ -1,5 +1,5 @@
-import { $ } from 'hanako-ts/dist-legacy/Framework';
-import { Component } from 'hanako-ts/dist-legacy/Component';
+import { $ } from 'hanako-ts/dist/Framework';
+import { Component } from 'hanako-ts/dist/Component';
 
 export class Analytics extends Component {
   private GA_ID: string = '';
@@ -10,7 +10,7 @@ export class Analytics extends Component {
   public async init(): Promise<void> {
     await super.init();
 
-    $('body').on('hw-cookies-setting-traffic-changed', (event: any) => {
+    $('body').on('hw-consent-setting-traffic-changed', (event: any) => {
       if (event.detail.isEnabled) {
         //this.enableGA();
         this.enableMatomo();
@@ -35,7 +35,7 @@ export class Analytics extends Component {
     scriptTag.src = '/wp-content/uploads/matomo/matomo.js';
 
     const s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(scriptTag, s);
+    s?.parentNode?.insertBefore(scriptTag, s);
   }
 
   private enableGA() {
@@ -45,7 +45,7 @@ export class Analytics extends Component {
     scriptTag.src = 'https://www.googletagmanager.com/gtag/js?id=' + this.GA_ID;
 
     const s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(scriptTag, s);
+    s?.parentNode?.insertBefore(scriptTag, s);
 
     (<any>window).dataLayer = (<any>window).dataLayer || [];
     function gtag(name: string, data: any) {

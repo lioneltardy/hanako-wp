@@ -1,0 +1,9 @@
+[data-hw-background-image],
+[data-hw-src] {
+  @apply opacity-0 transition-opacity duration-500 ease-out;
+}
+
+[data-hw-background-image][data-background-loaded='true']:not(.active),
+[data-hw-src][data-background-loaded='true']:not(.active) {
+  @apply opacity-100;
+}

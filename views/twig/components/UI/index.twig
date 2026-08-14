@@ -1,0 +1,172 @@
+{% macro burger(id, options) %}
+  {% set line_base = 'block absolute left-1/2 w-full border-b border-current -translate-x-1/2' %}
+  {% set line_motion = 'transition-[top,rotate] duration-300 delay-[150ms,0ms] group-data-is-active:top-1/2 group-data-is-active:delay-[0ms,150ms]' %}
+  <a href="#" id="{{ id }}" class="group relative block h-20 w-32 {{ options.classes|default('') }}">
+    <span class="{{ line_base }} {{ line_motion }} top-0 group-data-is-active:-rotate-45"></span>
+    <span class="{{ line_base }} top-1/2 transition-[width] delay-150 group-data-is-active:w-0"></span>
+    <span class="{{ line_base }} {{ line_motion }} top-full group-data-is-active:rotate-45"></span>
+  </a>
+{% endmacro %}
+
+{% macro button(text, options) %}
+  {% set tag = options.href is defined ? 'a' : 'button' %}
+  {% set variant = options.variant|default('primary') %}
+  {% set variants = {
+    primary: get_form_fragment('button', 'primary'),
+    discrete: get_form_fragment('button', 'discrete')
+  } %}
+  {% set size = options.size|default('md') %}
+  {% set sizes = {
+    sm: get_form_fragment('button', 'sm'),
+    md:  get_form_fragment('button', 'md')
+  } %}
+  <{{ tag }}
+    {% if tag == 'a' %}href="{{ options.href }}" target="{{ options.target }}"{% else %}type="{{ options.type|default('button') }}"{% endif %}
+    class="{{ get_form_fragment('button', 'default') }} {{ variants[variant] }} {{ sizes[size] }} {{ options.classes|default('') }}"
+    {% if options.disabled %}disabled{% endif %}
+    {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }}
+  >
+    {{ text }}
+    {% if options.has_arrow %}
+      {{ _self.chevron() }}
+    {% endif %}
+  </{{ tag }}>
+{% endmacro %}
+
+{% macro input(name, options) %}
+  <input
+    id="{{ options.id|default(name) }}"
+    name="{{ name }}"
+    value="{{ options.value|default('') }}"
+    type="{{ options.type|default('text') }}"
+    placeholder="{{ options.placeholder|default('') }}"
+    autocomplete="{{ options.autocomplete|default('') }}"
+    class="{{ get_form_fragment('input') }} {{ options.classes|default('') }}"
+    {% if options.disabled %}disabled{% endif %}
+    {% if options.required %}required{% endif %}
+    {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }}
+  />
+{% endmacro %}
+
+{% macro textarea(name, options) %}
+  <textarea
+    id="{{ options.id|default(name) }}"
+    name="{{ name }}"
+    value="{{ options.value|default('') }}"
+    placeholder="{{ options.placeholder|default('') }}"
+    rows="{{ options.rows|default(4) }}"
+    autocomplete="{{ options.autocomplete|default('') }}"
+    class="{{ get_form_fragment('textarea') }} {{ options.classes|default('') }}"
+    {% if options.disabled %}disabled{% endif %}
+    {% if options.required %}required{% endif %}
+    {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }}
+  >{{ options.value|default('') }}</textarea>
+{% endmacro %}
+
+{% macro select(name, values, options) %}
+  <div class="grid grid-cols-1 {{ options.disabled ? 'text-gray-300' : 'text-white'}} {{ options.classes|default('') }}">
+    <select
+      id="{{ options.id|default(name) }}"
+      name="{{ name }}"
+      class="{{ get_form_fragment('select') }} {{ options.classes|default('') }}"
+      {% if options.disabled %}disabled{% endif %}
+      {% if options.required %}required{% endif %}
+      {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }}
+    >
+      {% for value in values %}
+        <option value="{{ value.value }}" {% if value.selected %}selected{% endif %}>{{ value.label }}</option>
+      {% endfor %}
+    </select>
+    <svg viewBox="0 0 16 16" fill="currentColor" data-slot="icon" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 mr-2 size-24 self-center justify-self-end">
+      <path d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+    </svg>
+  </div>
+{% endmacro %}
+
+{% macro checkbox(name, text, options) %}
+  <div class="relative group flex items-center gap-12 {{ options.classes|default('') }}">
+        <input
+          id="{{ options.id|default(name) }}"
+          type="checkbox"
+          name="{{ name }}"
+          value="{{ options.value|default('') }}"
+          {% if options.checked %}checked{% endif %}
+          {% if options.disabled %}disabled{% endif %}
+          {% if options.required %}required{% endif %}
+          class="col-start-1 row-start-1 {{ get_form_fragment('checkbox') }}" />
+        {{ get_form_fragment('checkbox_svg') }}
+    <label for="{{ options.id|default(name) }}" class="{{ options.disabled ? 'text-gray-300' : 'text-white' }}">{{ text }}</label>
+  </div>
+{% endmacro %}
+
+{% macro radio(name, text, options) %}
+  <div class="flex gap-12 {{ options.classes|default('') }}">
+    <div class="flex shrink-0 items-center">
+      <input
+        id="{{ options.id|default(name) }}"
+        type="radio"
+        name="{{ name }}"
+        value="{{ options.value|default('') }}"
+        {% if options.checked %}checked{% endif %}
+        {% if options.disabled %}disabled{% endif %}
+        {% if options.required %}required{% endif %}
+        class="size-16  {{ get_form_fragment('radio') }}" />
+    </div>
+    <label for="{{ options.id|default(name) }}" class="{{ options.disabled ? 'text-gray-300' : 'text-white' }}">{{ text }}</label>
+  </div>
+{% endmacro %}
+
+{% macro label(for, text, options) %}
+  <label
+    for="{{ for }}"
+    class="{{ get_form_fragment('label') }} {{ options.classes|default('') }}"
+    {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }}
+  >
+    {{ text }}
+  </label>
+{% endmacro %}
+
+{% macro legend(text, options) %}
+  <legend
+    class="{{ get_form_fragment('legend') }} {{ options.classes|default('') }}"
+    {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }}
+  >
+    {{ text }}
+  </legend>
+{% endmacro %}
+
+{% macro upload(name, text, options) %}
+  <div class="group flex justify-center rounded-lg border border-dashed {{ options.disabled ? 'border-gray-200' : 'border-gray-400' }} px-24 py-40 group-has-user-invalid:border-red">
+    <div class="text-center">
+      <div class="flex justify-center group-has-user-invalid:text-red">
+        <label for="{{ options.id|default(name) }}" class="relative {{ not options.disabled ? 'cursor-pointer' }} rounded-6 bg-transparent {{ options.disabled ? 'text-gray-300' : 'text-primary' }} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary group-has-user-invalid:text-red">
+          <span>Click to select a file</span>
+          <input
+            id="{{ options.id|default(name) }}"
+            type="file"
+            name="{{ name }}"
+            class="sr-only"
+            accept="{{ options.accept|default('') }}"
+            {% if options.size %}data-max-size="{{ options.size }}"{% endif %}
+            {% if options.multiple %}multiple{% endif %}
+            {% if options.multiple %}capture{% endif %}
+            {% if options.disabled %}disabled{% endif %}
+            {% if options.required %}required{% endif %}
+            {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }} />
+        </label>
+      </div>
+      {% if options.accept_text or options.size_text %}
+        <p class="text-small {{ options.disabled ? 'text-gray-200' : 'text-gray-400' }}">{{ options.accept_text }} {{ options.size_text ? 'up to ' ~ options.size_text }}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro validation_message(message, options) %}
+  <p
+    class="invisible peer-user-invalid:visible text-small text-red {{ options.classes|default('') }}"
+    {{ options.attributes|default({})|map((v, k) => k ~ '="' ~ v ~ '"')|join(' ') }}
+  >
+    {{ message }}
+  </p>
+{% endmacro %}

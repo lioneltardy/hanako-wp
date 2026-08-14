@@ -11,5 +11,12 @@
   "endOfLine": "lf",
   "quoteProps": "as-needed",
   "jsxSingleQuote": true,
-  "proseWrap": "preserve"
+  "proseWrap": "preserve",
+  "plugins": [
+    "@zackad/prettier-plugin-twig",
+    "prettier-plugin-css-order",
+		"prettier-plugin-tailwindcss"
+	],
+  "tailwindStylesheet": "./views/css/style.css",
+  "twigAlwaysBreakObjects": false
 }

@@ -1,9 +1,17 @@
 {% extends 'structure/html.twig' %}
 
 {% block content %}
-  <div class="container">
-    <h1>{{ post.title }}</h1>
-    {{ post.content }}
-    {{ function('comments_template') }}
-  </div>
+  <main class="py-16 lg:py-32">
+    <div class="container">
+      <div class="grid-12">
+        <div class="col-span-12">
+          <h1 class="font-headline text-large">{{ post.title }}</h1>
+          <div class="text">
+            {{ post.content }}
+          </div>
+          {{ function('comments_template') }}
+        </div>
+      </div>
+    </div>
+  </main>
 {% endblock %}

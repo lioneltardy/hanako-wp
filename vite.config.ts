@@ -1,23 +1,40 @@
 import { resolve } from 'node:path';
-import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig, createLogger } from 'vite';
 import copy from 'rollup-plugin-copy';
 
+const FONT_EXTENSIONS = /\.(woff2?|ttf|otf|eot)$/i;
+
 export default defineConfig(({ mode }) => ({
-  plugins: [tailwindcss()],
+  base: './',
+  plugins: [],
   css: {
-    transformer: 'lightningcss',
+    transformer: 'postcss',
+  },
+  customLogger: {
+    ...createLogger(),
+    warn(msg, options) {
+      if (msg.includes('resolved at runtime')) return;
+      createLogger().warn(msg, options);
+    },
+    warnOnce(msg, options) {
+      if (msg.includes('resolved at runtime')) return;
+      createLogger().warnOnce?.(msg, options);
+    },
   },
   build: {
+    target: ['safari12', 'chrome90', 'firefox88'],
     outDir: 'dist',
     emptyOutDir: true,
     manifest: true,
     sourcemap: mode !== 'production',
-    cssMinify: 'lightningcss',
+    cssMinify: true,
     rollupOptions: {
       plugins: [
         copy({
-          targets: [{ src: 'views/assets/**/*', dest: 'dist/assets' }],
+          targets: [
+            { src: 'views/assets/icons/**/*', dest: 'dist/assets/icons' },
+            { src: 'views/assets/images/**/*', dest: 'dist/assets/images' },
+          ],
           hook: 'writeBundle',
         }),
       ],
@@ -32,6 +49,9 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: ({ name }) => {
           if (name?.endsWith('.css')) {
             return 'css/[name]-[hash][extname]';
+          }
+          if (name && FONT_EXTENSIONS.test(name)) {
+            return 'assets/fonts/[name][extname]';
           }
           return 'assets/[name]-[hash][extname]';
         },

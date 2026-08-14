@@ -1,26 +1,28 @@
-<!doctype html>
-<html lang="{{ site.language|slice(0,2) }}">
-<head>
-  <meta charset="{{ site.charset }}"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="{{ site.language|slice(0, 2) }}">
+  <head>
+    <meta charset="{{ site.charset }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>{{ wp_title ? wp_title : site.title }}</title>
+    <title>
+      {{ wp_title ? wp_title : site.title }}
+    </title>
 
-  {{ function('wp_head') }}
-</head>
+    {{ function('wp_head') }}
+  </head>
 
-<body class="{{body_class}}">
-  {% block header %}
-    {% include 'structure/header.twig' %}
-  {% endblock %}
+  <body class="{{ body_class }} bg-gray-100 text-white">
+    {% block header %}
+      {% include 'structure/header.twig' %}
+    {% endblock %}
 
-  {% block content %}
-    Sorry, no content
-  {% endblock %}
+    {% block content %}
+      Sorry, no content
+    {% endblock %}
 
-  {% block footer %}
-    {% include 'structure/footer.twig' %}
-  {% endblock %}
-  {{ function('wp_footer') }}
-</body>
+    {% block footer %}
+      {% include 'structure/footer.twig' %}
+    {% endblock %}
+    {{ function('wp_footer') }}
+  </body>
 </html>

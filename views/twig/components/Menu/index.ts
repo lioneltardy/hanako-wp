@@ -1,6 +1,6 @@
-import { $ } from 'hanako-ts/dist-legacy/Framework';
-import { Component } from 'hanako-ts/dist-legacy/Component';
-import { Collection } from 'hanako-ts/dist-legacy/Collection';
+import { $ } from 'hanako-ts/dist/Framework';
+import { Component } from 'hanako-ts/dist/Component';
+import { Collection } from 'hanako-ts/dist/Collection';
 
 export class Menu extends Component {
   constructor() {
@@ -13,9 +13,13 @@ export class Menu extends Component {
     $('#btn-toggle-menu').on('click', (event: MouseEvent, button: Collection) => {
       event.preventDefault();
 
-      button.toggleClass('is-active');
-      $('#main-menu').toggleClass('is-opened');
-      button.attr('aria-expanded', String(button.hasClass('is-active')));
+      if (!button.hasAttr('data-is-active')) {
+        button.attr('data-is-active', '');
+        $('#main-menu').attr('data-is-open', '');
+      } else {
+        button.removeAttr('data-is-active');
+        $('#main-menu').removeAttr('data-is-open');
+      }
     });
 
     this.success();

@@ -1,15 +1,17 @@
-<header class="component-header hw-scrollspy-header fixed top-0 start-0 w-full bg-pink py-4 z-1000">
-  <div class="container flex justify-between mx-auto sm:px-4 lg:px-10">
-    <a href="{{ site.url }}">{{ site.title }}</a>
+{% import 'components/UI/index.twig' as ui %}
 
-    <div class="flex gap-8">
-      {% include 'components/DarkMode/index.twig' %}
-
-      <a href="#" id="btn-toggle-menu" class="block relative w-8 h-6">
-        <span></span>
-        <span></span>
-        <span></span>
-      </a>
+<header class="bg-gray-100 fixed top-0 left-0 z-1000 w-full border-b border-gray-200 py-16 text-white">
+  <nav class="container flex items-center justify-between">
+    <div class="lg:flex-1">
+      <a href="{{ site.url }}"><img src="{{ asset('images/logo.svg') }}" alt="{{ site.title }}" class="block h-20" /></a>
     </div>
-  </div>
+    <div class="hidden justify-center gap-32 lg:flex">
+      {% for item in menus.main.items %}
+        <a href="{{ item.link }}" class="{{ 'current-menu-item' in item.classes ? 'text-primary' }} hover:text-primary">{{ item.title }}</a>
+      {% endfor %}
+    </div>
+    <div class="lg:flex-1">
+      {{ ui.burger('btn-toggle-menu', { classes: 'lg:hidden' }) }}
+    </div>
+  </nav>
 </header>

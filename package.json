@@ -1,45 +1,35 @@
 {
   "name": "hanako-wp",
-  "version": "1.6.12",
-  "description": "A basic wordpress template based on Timber/Twig and Hanako ts framework.",
+  "type": "module",
+  "version": "2.0.0",
+  "description": "A basic wordpress template based on Timber/Twig, TailwindCSS 4 ant Hanako TS.",
   "homepage": "https://github.com/harkle/hanako-wp",
   "bugs": {
     "url": "https://github.com/harkle/hanako-wp/issues"
   },
   "scripts": {
     "dev": "vite build --watch --mode development",
-    "build": "vite build",
-    "format": "prettier --write views/ts/**/*.ts views/css/**/*.css",
+    "build": "vite build && node build-legacy-css.mjs",
     "clean": "rimraf dist",
-    "lint:ts": "eslint views/ts/**/*.ts",
-    "lint:css": "stylelint views/css/**/*.css"
+    "postinstall": "patch-package"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.10",
+    "@tailwindcss/postcss": "^4.3.1",
     "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.45.0",
-    "prettier": "^3.0.0",
+    "@zackad/prettier-plugin-twig": "^0.17.0",
+    "patch-package": "^8.0.1",
+    "postcss": "^8.5.15",
+    "prettier": "^3.9.6",
+    "prettier-plugin-css-order": "^2.2.0",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "rimraf": "^5.0.1",
     "rollup-plugin-copy": "^3.5.0",
-    "sass": "^1.101.0",
-    "stylelint": "^16.13.2",
-    "stylelint-config-property-sort-order-smacss": "^10.0.0",
-    "stylelint-order": "^6.0.4",
-    "tailwindcss": "^4.1.10",
+    "tailwindcss": "^4.3.1",
     "typescript": "^5.1.6",
     "vite": "^8.0.16"
   },
   "dependencies": {
     "@tailwindplus/elements": "^1.0.22",
-    "hanako-ts": "^1.2.7",
-    "install": "^0.13.0",
-    "npm": "^11.17.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "hanako-ts": "^2.0.3"
+  }
 }

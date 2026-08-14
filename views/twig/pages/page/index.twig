@@ -1,8 +1,12 @@
 {% extends 'structure/html.twig' %}
 
 {% block content %}
-  <div class="container">
-    <h1>{{ post.title }}</h1>
-    {{ post.content }}
-  </div>
+  <main class="py-16 lg:py-32">
+    <div class="container">
+      <h1 class="font-headline text-large">{{ post.title }}</h1>
+      <div class="text">
+        {{ post.content }}
+      </div>
+    </div>
+  </main>
 {% endblock %}

@@ -1,0 +1,30 @@
+@theme {
+  --spacing: 1px;
+
+  --breakpoint-sm: initial;
+  --breakpoint-md: initial;
+  --breakpoint-lg: 62rem;
+  --breakpoint-xl: 87.5rem; /* 1400px */
+  --breakpoint-2xl: initial;
+
+  --radius-3: 3px;
+  --radius-6: 6px;
+}
+
+/* Add custom variants for data attributes */
+/* @custom-variant data-selected (&[data-selected~="true"]);*/
+
+body {
+  --header-height: 53px;
+  --menu-height: calc(100vh - var(--header-height));
+  --footer-height: 56px;
+  --gutter: 16px;
+
+  @media (width >= theme(--breakpoint-lg)) {
+    --gutter: 32px;
+  }
+
+  main {
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  }
+}

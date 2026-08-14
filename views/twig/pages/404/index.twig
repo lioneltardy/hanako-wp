@@ -1,7 +1,15 @@
 {% extends 'structure/html.twig' %}
 
 {% block content %}
-  <div class="container">
-    <h1>Error 404</h1>
-  </div>
+  <main class="py-16 lg:py-32">
+    <div class="container">
+      <div class="grid-12">
+        <div class="col-span-12">
+          <h1 class="font-headline text-large">Page introuvable</h1>
+          <p>La page que vous recherchez n'existe pas ou a été déplacée.</p>
+          <a href="{{ home_url }}" class="text-white underline hover:text-primary">Retour à l'accueil</a>
+        </div>
+      </div>
+    </div>
+  </main>
 {% endblock %}

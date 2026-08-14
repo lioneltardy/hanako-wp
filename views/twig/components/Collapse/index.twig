@@ -1,0 +1,12 @@
+{% macro trigger(target_id, content, options) %}
+  {% set group = options.group is defined ? 'data-collapse-group="' ~ options.group ~ '"' : '' %}
+  <button class="{{ options.classes|default('') }}" data-toggle="collapse" {{ group }} data-target="#{{ target_id }}" aria-expanded="{{ options.open|default(false) ? 'true' : 'false' }}" aria-controls="{{ target_id }}">
+    {{ content }}
+  </button>
+{% endmacro %}
+
+{% macro panel(id, content, options) %}
+  <div id="{{ id }}" class="h-0 overflow-hidden transition-[height] {{ options.classes|default('') }}">
+    {{ content }}
+  </div>
+{% endmacro %}
